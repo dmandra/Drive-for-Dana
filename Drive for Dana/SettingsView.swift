@@ -101,11 +101,11 @@ struct SettingsView: View {
                         .font(.body)
                         .bold()
                     
-                    Text("Version 1.0")
+                    Text("Version 1.4.0")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
-                    Text("Car shows and cruise nights information for Long Island")
+                    Text("Car Shows and Cruise Nights / Cars & Coffee Information for Long Island")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }

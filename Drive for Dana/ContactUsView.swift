@@ -10,32 +10,33 @@ import SwiftUI
 struct ContactUsView: View {
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
                 // Header
                 Text("CONTACT US")
                     .font(.title2)
                     .bold()
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.bottom, 8)
+                    //.frame(maxWidth: .infinity, alignment: .center)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, 4)
                 
                 // Information items
                 Text("Become A Sponsor")
                     .font(.body)
                 
-                Text("Add Your Car Show")
+                Text("Add Your Car Show OR Make a Correction")
                     .font(.body)
                 
                 Text("Add Your Cruise Night/Cars & Coffee")
                     .font(.body)
                 
                 Divider()
-                    .padding(.vertical, 8)
+                    .padding(.vertical, 4)
                 
                 // Drive for Dana Foundation section
                 Text("DRIVE FOR DANA FOUNDATION")
                     .font(.headline)
                     .bold()
-                    .padding(.bottom, 4)
+                    .padding(.bottom, 2)
                 
                 Text("Nicholas Ferraioli")
                     .font(.body)
@@ -91,13 +92,13 @@ struct ContactUsView: View {
                 .foregroundColor(.blue)
                 
                 Divider()
-                    .padding(.vertical, 8)
+                    .padding(.vertical, 4)
                 
                 // App Developer section
                 Text("App Developer")
                     .font(.headline)
                     .bold()
-                    .padding(.bottom, 4)
+                    .padding(.bottom, 2)
                 
                 Text("Donald Mandra")
                     .font(.body)

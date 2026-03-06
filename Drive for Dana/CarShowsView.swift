@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
+import Combine
 
 // MARK: - Car Show Model
-struct CarShow: Identifiable, Equatable {
-    let id = UUID()
+struct CarShow: Identifiable, Equatable, Codable {
+    let id: UUID
     let rowOrder: Int  // Track original spreadsheet order
     let date: String
     let club: String
@@ -27,6 +28,27 @@ struct CarShow: Identifiable, Equatable {
     let rainDate: String
     let vendors: String
     let vendorFee: String
+    
+    init(id: UUID = UUID(), rowOrder: Int, date: String, club: String, name: String, time: String, description: String, location: String, address: String, carFee: String, spectatorFee: String, notes: String, contact: String, email: String, website: String, rainDate: String, vendors: String, vendorFee: String) {
+        self.id = id
+        self.rowOrder = rowOrder
+        self.date = date
+        self.club = club
+        self.name = name
+        self.time = time
+        self.description = description
+        self.location = location
+        self.address = address
+        self.carFee = carFee
+        self.spectatorFee = spectatorFee
+        self.notes = notes
+        self.contact = contact
+        self.email = email
+        self.website = website
+        self.rainDate = rainDate
+        self.vendors = vendors
+        self.vendorFee = vendorFee
+    }
     
     // Parse date string to Date object for comparison
     var parsedDate: Date? {
@@ -70,6 +92,7 @@ struct CarShowsView: View {
     @State private var carShows: [CarShow] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
+    @ObservedObject private var dataManager = DataManager.shared
     
     let months: [String] = Calendar.current.monthSymbols
     
@@ -145,7 +168,13 @@ struct CarShowsView: View {
                 ScrollView {
                     VStack(spacing: 4) {
                         // Text message above first car show
-                        Text("Upcoming car shows for \(months[monthIndex])")
+                        //Text("Upcoming Car Shows for \(months[monthIndex])")
+                        //Text("Check Back Often")
+                           // .font(.subheadline)
+                           // .foregroundStyle(.secondary)
+                           // .padding(.vertical, 2)
+                            //.frame(maxWidth: .infinity, alignment: .center)
+                        Text("Contact Us from the Home Menu for adding your event or for corrections.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .padding(.vertical, 2)
@@ -158,7 +187,7 @@ struct CarShowsView: View {
                         }
                         
                         // Text message below last car show
-                        Text("Please take note of rain dates if provided. Past shows are filtered out in order to show future shows only.")
+                        Text("Past shows are filtered out in order to show future shows only. Please verify details directly with the car show organizers.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .padding(.vertical, 8)
@@ -179,6 +208,30 @@ struct CarShowsView: View {
         isLoading = true
         errorMessage = nil
         
+        // Try to load cached data first
+        if let cachedShows = dataManager.loadCarShows(for: monthIndex) {
+            carShows = cachedShows
+            isLoading = false
+            
+            // Check if we should refresh in the background
+            let timestamp = dataManager.getCarShowsTimestamp(for: monthIndex)
+            if dataManager.isOnline && dataManager.shouldRefreshCache(for: timestamp, maxAge: 86400) {
+                // Refresh in background
+                await fetchCarShowsFromNetwork()
+            }
+            return
+        }
+        
+        // No cached data, try to fetch from network
+        if dataManager.isOnline {
+            await fetchCarShowsFromNetwork()
+        } else {
+            errorMessage = "No internet connection and no cached data available"
+            isLoading = false
+        }
+    }
+    
+    private func fetchCarShowsFromNetwork() async {
         // Single spreadsheet ID
         let spreadsheetId = "1WBhNXkVSf9VVjVM9Dfw6mG31gVM877kuSM0kioOHjus"
         
@@ -223,10 +276,21 @@ struct CarShowsView: View {
                 return
             }
             
-            carShows = parseCSV(csvString)
+            let newShows = parseCSV(csvString)
+            carShows = newShows
+            
+            // Save to cache
+            dataManager.saveCarShows(newShows, for: monthIndex)
+            
             isLoading = false
         } catch {
-            errorMessage = error.localizedDescription
+            // If we have cached data, keep using it
+            if let cachedShows = dataManager.loadCarShows(for: monthIndex) {
+                carShows = cachedShows
+                errorMessage = "Using cached data (offline)"
+            } else {
+                errorMessage = error.localizedDescription
+            }
             isLoading = false
         }
     }
@@ -323,16 +387,29 @@ struct CarShowsView: View {
 struct CarShowCard: View {
     let carShow: CarShow
     
+    // Check if the date field says "Rain Dates"
+    private var isRainDateRecord: Bool {
+        return carShow.date.trimmingCharacters(in: .whitespaces).lowercased() == "rain dates"
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
+            
             // Column 1: DATE
             if !carShow.date.isEmpty {
                 HStack(spacing: 4) {
                     Image(systemName: "calendar")
                         .font(.subheadline)
                     Text(carShow.date)
+                        //.font(.subheadline)
+                        //.fontWeight(.semibold)
                         .font(.subheadline)
-                        .fontWeight(.semibold)
+                        .bold()
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(6)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
@@ -343,10 +420,18 @@ struct CarShowCard: View {
                     .font(.subheadline)
             }
             
-            // Column 3: NAME
+            // Column 3: NAME (with rain date styling if applicable)
             if !carShow.name.isEmpty {
-                Text(carShow.name)
-                    .font(.headline)
+                HStack(spacing: 4) {
+                    Text(carShow.name)
+                        .font(.subheadline)
+                        .bold()
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(6)
             }
             
             
@@ -357,6 +442,12 @@ struct CarShowCard: View {
                         .font(.subheadline)
                     Text(carShow.time)
                         .font(.subheadline)
+                        .bold()
+                        //.padding(.horizontal, 8)
+                        //.padding(.vertical, 4)
+                        //.background(Color.red)
+                        //.foregroundColor(.white)
+                        //.cornerRadius(6)
                 }
             }
             
@@ -385,8 +476,10 @@ struct CarShowCard: View {
                             .bold()
                             .foregroundStyle(.primary)
                             .multilineTextAlignment(.leading)
+                        Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .font(.subheadline)
+                            .foregroundStyle(.blue)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -395,7 +488,7 @@ struct CarShowCard: View {
             
             // Column 8: CAR FEE
             if !carShow.carFee.isEmpty {
-                HStack(spacing: 4) {
+                HStack(alignment: .top, spacing: 4) {
                     Image(systemName: "dollarsign.circle")
                         .font(.subheadline)
                     Text("Car: \(carShow.carFee)")
@@ -405,7 +498,7 @@ struct CarShowCard: View {
             
             // Column 9: SPECTATOR FEE
             if !carShow.spectatorFee.isEmpty {
-                HStack(spacing: 4) {
+                HStack(alignment: .top, spacing: 4) {
                     Image(systemName: "dollarsign.circle")
                         .font(.subheadline)
                     Text("Spectator: \(carShow.spectatorFee)")
@@ -421,7 +514,7 @@ struct CarShowCard: View {
             
             // Column 11: CONTACT
             if !carShow.contact.isEmpty {
-                HStack(spacing: 4) {
+                HStack(alignment: .top, spacing: 4) {
                     Image(systemName: "phone")
                         .font(.subheadline)
                     Text(carShow.contact)
@@ -432,7 +525,7 @@ struct CarShowCard: View {
             // Column 12: EMAIL
             if !carShow.email.isEmpty {
                 Link(destination: URL(string: "mailto:\(carShow.email)") ?? URL(string: "https://www.apple.com")!) {
-                    HStack(spacing: 4) {
+                    HStack(alignment: .top, spacing: 4) {
                         Image(systemName: "envelope")
                             .font(.subheadline)
                         Text(carShow.email)
@@ -448,7 +541,7 @@ struct CarShowCard: View {
             // Column 13: WEBSITE
             if !carShow.website.isEmpty {
                 Link(destination: URL(string: carShow.website.hasPrefix("http") ? carShow.website : "https://\(carShow.website)") ?? URL(string: "https://www.apple.com")!) {
-                    HStack(spacing: 4) {
+                    HStack(alignment: .top, spacing: 4) {
                         Image(systemName: "link")
                             .font(.subheadline)
                         Text(carShow.website)
@@ -472,23 +565,34 @@ struct CarShowCard: View {
             }
             
             // Column 15 & 16: VENDORS and VENDOR FEE
-            if !carShow.vendors.isEmpty || !carShow.vendorFee.isEmpty {
+            if !carShow.vendors.isEmpty {
+                HStack(spacing: 4) {
+                    Image(systemName: "car.circle")
+                        .font(.subheadline)
+                    Text("Vendors: \(carShow.vendors)")
+                        .font(.subheadline)
+                }
+            }
+            
+            if !carShow.vendorFee.isEmpty {
                 HStack(spacing: 4) {
                     Image(systemName: "dollarsign.circle")
                         .font(.subheadline)
-                    if !carShow.vendors.isEmpty {
-                        Text("Vendors: \(carShow.vendors)")
-                            .font(.subheadline)
-                    }
-                    if !carShow.vendorFee.isEmpty {
-                        Text("Vendor Fee: \(carShow.vendorFee)")
-                            .font(.subheadline)
-                    }
+                    Text("Vendor Fee: \(carShow.vendorFee)")
+                        .font(.subheadline)
                 }
             }
         }
-        .padding(12)
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(isRainDateRecord ? Color.gray.opacity(0.2) : Color.clear)
+        )
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(isRainDateRecord ? Color.gray : Color.clear, lineWidth: 2)
+        )
     }
     
     private func openInMaps() {

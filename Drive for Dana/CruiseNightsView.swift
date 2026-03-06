@@ -1,15 +1,16 @@
 //
-//  HardcodedCruiseNightsView.swift
+//  CruiseNightsView.swift
 //  LI_Cars_and_CruseNights
 //
 //  Created by Donald Mandra on 2/22/26.
 //
 
 import SwiftUI
+import Combine
 
 // MARK: - Cruise Night Model
-struct CruiseNight: Identifiable, Equatable {
-    let id = UUID()
+struct CruiseNight: Identifiable, Equatable, Codable {
+    let id: UUID
     let rowOrder: Int  // Track original spreadsheet order
     let clubName: String
     let name: String
@@ -17,14 +18,29 @@ struct CruiseNight: Identifiable, Equatable {
     let time: String
     let dates: String
     let notes: String
+    
+    init(id: UUID = UUID(), rowOrder: Int, clubName: String, name: String, location: String, time: String, dates: String, notes: String) {
+        self.id = id
+        self.rowOrder = rowOrder
+        self.clubName = clubName
+        self.name = name
+        self.location = location
+        self.time = time
+        self.dates = dates
+        self.notes = notes
+    }
 }
 
+// Type alias for cleaner usage in ContentView
+//typealias CruiseNightsView = HardcodedCruiseNightsView
+
 // MARK: - Cruise Nights View
-struct HardcodedCruiseNightsView: View {
+struct CruiseNightsView: View {
     @Binding var dayOfWeekIndex: Int
     @State private var cruiseNights: [CruiseNight] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
+    @ObservedObject private var dataManager = DataManager.shared
     
     let daysOfWeek: [String] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     
@@ -81,6 +97,13 @@ struct HardcodedCruiseNightsView: View {
                             
                             Divider()
                         }
+                        
+                        // Footer below cruise nights
+                        Text("Check back regularly for updates. Cruise Night schedules may change.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .padding(.vertical, 8)
+                            .frame(maxWidth: .infinity, alignment: .center)
                     }
                     .padding(.horizontal)
                     .padding(.top, 8)
@@ -97,19 +120,42 @@ struct HardcodedCruiseNightsView: View {
         isLoading = true
         errorMessage = nil
         
+        // Try to load cached data first
+        if let cachedNights = dataManager.loadCruiseNights(for: dayOfWeekIndex) {
+            cruiseNights = cachedNights
+            isLoading = false
+            
+            // Check if we should refresh in the background
+            let timestamp = dataManager.getCruiseNightsTimestamp(for: dayOfWeekIndex)
+            if dataManager.isOnline && dataManager.shouldRefreshCache(for: timestamp, maxAge: 86400) {
+                // Refresh in background
+                await fetchCruiseNightsFromNetwork()
+            }
+            return
+        }
+        
+        // No cached data, try to fetch from network
+        if dataManager.isOnline {
+            await fetchCruiseNightsFromNetwork()
+        } else {
+            errorMessage = "No internet connection and no cached data available"
+            isLoading = false
+        }
+    }
+    
+    private func fetchCruiseNightsFromNetwork() async {
         // Spreadsheet ID from your URL
         let spreadsheetId = "1zSDlFOtKubbo3OCFIz2c-2NWyj49k6CWvHBmB3GQfm0"
         
         // Map day of week index to sheet gid (tab identifier)
-        // You'll need to get the gid for each tab from the URL when you open each day's tab
         let sheetGids: [Int: String] = [
-            0: "1793929430",  // Sunday - Add gid here
-            1: "0",  // Monday - Add gid here
-            2: "1908585593",  // Tuesday - Add gid here
-            3: "1745799873",  // Wednesday - Add gid here
-            4: "837886919",  // Thursday - Add gid here
-            5: "2033559366",  // Friday - Add gid here
-            6: "354667709"   // Saturday - Add gid here
+            0: "1793929430",  // Sunday
+            1: "0",  // Monday
+            2: "1908585593",  // Tuesday
+            3: "1745799873",  // Wednesday
+            4: "837886919",  // Thursday
+            5: "2033559366",  // Friday
+            6: "354667709"   // Saturday
         ]
         
         // Get the sheet gid for the current day
@@ -136,10 +182,21 @@ struct HardcodedCruiseNightsView: View {
                 return
             }
             
-            cruiseNights = parseCSV(csvString)
+            let newNights = parseCSV(csvString)
+            cruiseNights = newNights
+            
+            // Save to cache
+            dataManager.saveCruiseNights(newNights, for: dayOfWeekIndex)
+            
             isLoading = false
         } catch {
-            errorMessage = error.localizedDescription
+            // If we have cached data, keep using it
+            if let cachedNights = dataManager.loadCruiseNights(for: dayOfWeekIndex) {
+                cruiseNights = cachedNights
+                errorMessage = "Using cached data (offline)"
+            } else {
+                errorMessage = error.localizedDescription
+            }
             isLoading = false
         }
     }
@@ -214,38 +271,51 @@ struct CruiseNightCard: View {
     let cruiseNight: CruiseNight
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 6) {
+            //VStack(alignment: .leading, spacing: 2) {
+                
                 // Club name at the top (if provided)
                 if !cruiseNight.clubName.isEmpty {
                     Text(cruiseNight.clubName)
-                        .font(.headline)
+                        .font(.subheadline)
                         .foregroundStyle(.primary)
                 }
                 
                 // Event name
                 if !cruiseNight.name.isEmpty {
                     Text(cruiseNight.name)
-                        .font(.headline)
+                        //.font(.headline)
+                        .font(.subheadline)
+                        .bold()
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(6)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-            }
+            //}
             
-            // Location with map link
+            // Address with map link
             if !cruiseNight.location.isEmpty {
                 Button(action: {
                     openInMaps()
                 }) {
-                    HStack(spacing: 4) {
+                    //HStack(spacing: 4) {
+                    HStack(alignment: .top, spacing: 4) {
                         Image(systemName: "mappin.circle.fill")
                             .foregroundStyle(.red)
                         Text(cruiseNight.location)
                             .font(.subheadline)
+                            .bold()
                             .foregroundStyle(.primary)
+                            .multilineTextAlignment(.leading)
                         Spacer()
                         Image(systemName: "arrow.up.right.square")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(.subheadline)
+                            .foregroundStyle(.blue)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .buttonStyle(.plain)
             }
@@ -307,7 +377,7 @@ struct CruiseNightCard: View {
         @State private var dayIndex = Calendar.current.component(.weekday, from: Date()) - 1
         
         var body: some View {
-            HardcodedCruiseNightsView(dayOfWeekIndex: $dayIndex)
+            CruiseNightsView(dayOfWeekIndex: $dayIndex)
         }
     }
     

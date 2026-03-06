@@ -29,7 +29,7 @@ struct WebView: UIViewRepresentable {
 struct ContentView: View {
     @State private var selection: Selection = .home  // Always start on Home
     @State private var linkSelection: LinkAction? = nil
-    @State private var homeImageSelection: HomeImageOption = .carShowInfo
+    @State private var homeImageSelection: HomeImageOption = .welcome
     @State private var monthIndex: Int = Calendar.current.component(.month, from: Date()) - 1
     @State private var dayOfWeekIndex: Int = {
         // Get current day of week (1 = Sunday, 7 = Saturday) and convert to 0-based index
@@ -43,11 +43,12 @@ struct ContentView: View {
     private enum Selection: String, CaseIterable, Identifiable {
         case home = "Home"
         case carShows = "Car Shows"
-        case cruiseNights = "Cruise Nights"
+        case cruiseNights = "Cruise Nights..."
         var id: String { rawValue }
     }
     
     private enum HomeImageOption: String, CaseIterable, Identifiable {
+        case welcome = "Welcome" // Not shown in menu, only on app launch and Home being selected
         case carShowInfo = "Car Show Info"
         case carShow = "Car Show Registration"
         case sponsors = "Sponsors"
@@ -55,14 +56,18 @@ struct ContentView: View {
         case gallery = "Gallery"
         case ourStory = "Our Story"
         case events = "Events"
+        case contactUs = "Contact Us"
+        case settings = "Settings"
         case donate = "Donate"
         var id: String { rawValue }
         
         var imageName: String? {
             switch self {
+            case .welcome:
+                return "HomeImage" // Home Page Image
             case .carShowInfo:
-                return "HomeImage"
-            case .carShowSponsors, .sponsors, .gallery, .carShow, .donate, .ourStory, .events:
+                return "CarShowImage"
+            case .carShowSponsors, .sponsors, .gallery, .carShow, .donate, .ourStory, .events, .contactUs, .settings:
                 return nil // Will use WebView, EventsView, or text instead
             }
         }
@@ -105,14 +110,16 @@ struct ContentView: View {
                  
                 Dana, Jacob, Pennie, Emily, Carmelo, Jackson, Sophia, Lauren, Amina, Don, Kayla, Addie, Kaleb and the rest of our kids continue to fight and are making strides every day.
                 """
+            case .contactUs:
+                return nil // Will use ContactUsView instead
             default:
                 return nil
             }
         }
         
         var showInMenu: Bool {
-            // Don't show donate in menu dropdown since it has its own button
-            self != .donate
+            // Don't show donate, welcome, sponsors, and car show sponsors in menu dropdown
+            self != .donate && self != .welcome && self != .sponsors && self != .carShowSponsors
         }
     }
     
@@ -154,20 +161,29 @@ struct ContentView: View {
                 .padding(.bottom, 8)
 
                 // Segmented picker for tab selection
-                Picker("Category", selection: $selection) {
+                HStack(spacing: 0) {
                     ForEach(Selection.allCases) { option in
-                        Text(option.rawValue).tag(option)
+                        Button(action: {
+                            // If tapping Home, always reset to welcome
+                            if option == .home {
+                                homeImageSelection = .welcome
+                            }
+                            selection = option
+                        }) {
+                            Text(option.rawValue)
+                                .font(.subheadline)
+                                .foregroundColor(selection == option ? .white : .primary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 4)
+                                .background(selection == option ? Color.accentColor : Color.clear)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
-                .pickerStyle(.segmented)
+                .background(Color(UIColor.secondarySystemFill))
+                .clipShape(Capsule())
                 .padding(.horizontal)
                 .padding(.bottom, 8)
-                .onChange(of: selection) { oldValue, newValue in
-                    // When returning to Home from other tabs, show the home image
-                    if newValue == .home && oldValue != .home {
-                        homeImageSelection = .carShowInfo
-                    }
-                }
                 
                 // Content based on selection
                 Group {
@@ -175,7 +191,7 @@ struct ContentView: View {
                     case .home:
                         // Home Tab with image selection menu
                         VStack(spacing: 0) {
-                            // Segmented-style control with Menu and Donate
+                            // Segmented-style control with Menu, Sponsors, and Donate
                             HStack(spacing: 0) {
                                 // Menu dropdown (first segment)
                                 Menu {
@@ -193,12 +209,28 @@ struct ContentView: View {
                                     .font(.system(size: 13))
                                     .foregroundColor(.primary)
                                     .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 6)
+                                    .padding(.vertical, 4)
                                     .background(Color(UIColor.secondarySystemFill), in: Capsule())
                                 }
                                 .frame(maxWidth: .infinity)
                                 
-                                // Gap between Menu and Donate
+                                // Gap between Menu and Sponsors
+                                Spacer().frame(width: 5)
+                                
+                                // Sponsors segment
+                                Button(action: {
+                                    homeImageSelection = .sponsors
+                                }) {
+                                    Text("Sponsors")
+                                        .font(.system(size: 13))
+                                        .foregroundColor(.primary)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 4)
+                                        .background(Color(UIColor.secondarySystemFill), in: Capsule())
+                                }
+                                .frame(maxWidth: .infinity)
+                                
+                                // Gap between Sponsors and Donate
                                 Spacer().frame(width: 5)
                                 
                                 // Donate segment
@@ -209,7 +241,7 @@ struct ContentView: View {
                                         .font(.system(size: 13))
                                         .foregroundColor(.primary)
                                         .frame(maxWidth: .infinity)
-                                        .padding(.vertical, 6)
+                                        .padding(.vertical, 4)
                                         .background(Color(UIColor.secondarySystemFill), in: Capsule())
                                 }
                                 .frame(maxWidth: .infinity)
@@ -252,6 +284,16 @@ struct ContentView: View {
                             } else if homeImageSelection == .events {
                                 // Show EventsView for Events option
                                 EventsView()
+                                    .padding(.top, 5)
+                                    .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
+                            } else if homeImageSelection == .contactUs {
+                                // Show ContactUsView for Contact Us option
+                                ContactUsView()
+                                    .padding(.top, 5)
+                                    .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
+                            } else if homeImageSelection == .settings {
+                                // Show SettingsView for Settings option
+                                SettingsView()
                                     .padding(.top, 5)
                                     .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
                             } else if let storyText = homeImageSelection.storyText {
@@ -304,8 +346,15 @@ struct ContentView: View {
                             }
                             .padding(.horizontal)
                             
-                            HardcodedCruiseNightsView(dayOfWeekIndex: $dayOfWeekIndex)
-                                .frame(maxHeight: .infinity)
+                            // Header above cruise nights
+                            //Text("Cruise Nights and Cars & Coffee for \(daysOfWeek[dayOfWeekIndex])")
+                            Text("Cruise Nights and Cars & Coffee")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 2)
+                                .padding(.bottom, 0)
+                            
+                            CruiseNightsView(dayOfWeekIndex: $dayOfWeekIndex)
                         }
                         .onAppear {
                             let currentDayNumber = Calendar.current.component(.weekday, from: Date())
@@ -317,11 +366,16 @@ struct ContentView: View {
             }
             .background(Color(UIColor.systemGray6))
             .ignoresSafeArea(.container, edges: [.bottom])
-            .onAppear {
+            .task {
                 // Ensure we start on Home tab on app launch
                 if selection != .home {
                     selection = .home
                 }
+                
+                // Preload all car shows and cruise nights data in background
+                print("🚀 Starting preload of all data...")
+                await DataManager.shared.preloadAllData()
+                print("✅ Preload complete!")
             }
         }
     }

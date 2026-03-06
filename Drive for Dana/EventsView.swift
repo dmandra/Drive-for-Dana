@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 // MARK: - Event Model
 struct Event: Identifiable, Equatable {
@@ -220,6 +221,7 @@ struct EventCard: View {
                 Text(event.name)
                     .font(.headline)
                     .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             
             // Date
@@ -250,7 +252,7 @@ struct EventCard: View {
                 Button(action: {
                     openInMaps()
                 }) {
-                    HStack(spacing: 4) {
+                    HStack(alignment: .top, spacing: 4) {
                         Image(systemName: "mappin.circle.fill")
                             .foregroundStyle(.red)
                         Text("\(event.location)")
@@ -260,6 +262,7 @@ struct EventCard: View {
                         Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .font(.subheadline)
+                            .foregroundStyle(.blue)
                     }
                 }
                 .buttonStyle(.plain)

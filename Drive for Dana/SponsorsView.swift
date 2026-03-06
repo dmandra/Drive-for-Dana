@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 // MARK: - Sponsor Model
 struct Sponsor: Identifiable, Equatable {
@@ -218,11 +219,13 @@ struct SponsorCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
+            
             // Sponsor Name
             if !sponsor.name.isEmpty {
                 Text(sponsor.name)
                     .font(.headline)
                     .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             
             // Address (with map link)
@@ -239,6 +242,7 @@ struct SponsorCard: View {
                         Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .font(.subheadline)
+                            .foregroundStyle(.blue)
                     }
                 }
                 .buttonStyle(.plain)
