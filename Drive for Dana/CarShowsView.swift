@@ -386,6 +386,7 @@ struct CarShowsView: View {
 // MARK: - Car Show Card Component
 struct CarShowCard: View {
     let carShow: CarShow
+    @ObservedObject private var favoritesManager = FavoritesManager.shared
     
     // Check if the date field says "Rain Dates"
     private var isRainDateRecord: Bool {
@@ -531,6 +532,7 @@ struct CarShowCard: View {
                         Text(carShow.email)
                             .font(.subheadline)
                             .lineLimit(1)
+                        Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .font(.subheadline)
                     }
@@ -547,6 +549,7 @@ struct CarShowCard: View {
                         Text(carShow.website)
                             .font(.subheadline)
                             .lineLimit(1)
+                        Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .font(.subheadline)
                     }
@@ -567,7 +570,7 @@ struct CarShowCard: View {
             // Column 15 & 16: VENDORS and VENDOR FEE
             if !carShow.vendors.isEmpty {
                 HStack(spacing: 4) {
-                    Image(systemName: "car.circle")
+                    Image(systemName: "dollarsign.circle")
                         .font(.subheadline)
                     Text("Vendors: \(carShow.vendors)")
                         .font(.subheadline)
@@ -582,6 +585,24 @@ struct CarShowCard: View {
                         .font(.subheadline)
                 }
             }
+            
+            // Favorite Button (only show if NOT a "Rain Dates" record)
+            if !isRainDateRecord {
+                Button(action: {
+                    favoritesManager.toggleFavorite(carShow)
+                }) {
+                    HStack {
+                        Image(systemName: favoritesManager.isFavorite(carShow) ? "star.fill" : "star")
+                        Text(favoritesManager.isFavorite(carShow) ? "Remove from Favorites" : "Add to Favorites")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(favoritesManager.isFavorite(carShow) ? Color.orange.opacity(0.1) : Color.blue.opacity(0.1))
+                    .foregroundColor(favoritesManager.isFavorite(carShow) ? .orange : .blue)
+                    .cornerRadius(8)
+                }
+                .padding(.top, 4)
+            }
         }
         .padding(10)
         .background(
@@ -594,6 +615,7 @@ struct CarShowCard: View {
                 .stroke(isRainDateRecord ? Color.gray : Color.clear, lineWidth: 2)
         )
     }
+    
     
     private func openInMaps() {
         let encodedLocation = carShow.address.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""

@@ -101,7 +101,7 @@ struct SettingsView: View {
                         .font(.body)
                         .bold()
                     
-                    Text("Version 1.4.0")
+                    Text("Version 1.5.0")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     

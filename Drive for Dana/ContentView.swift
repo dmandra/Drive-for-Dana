@@ -49,8 +49,9 @@ struct ContentView: View {
     
     private enum HomeImageOption: String, CaseIterable, Identifiable {
         case welcome = "Welcome" // Not shown in menu, only on app launch and Home being selected
-        case carShowInfo = "Car Show Info"
-        case carShow = "Car Show Registration"
+        case favorites = "Car Show Favorites"
+        case carShowInfo = "DFD Car Show Info"
+        case carShow = "DFD Car Show Registration"
         case sponsors = "Sponsors"
         case carShowSponsors = "Car Show Sponsors"
         case gallery = "Gallery"
@@ -67,8 +68,8 @@ struct ContentView: View {
                 return "HomeImage" // Home Page Image
             case .carShowInfo:
                 return "CarShowImage"
-            case .carShowSponsors, .sponsors, .gallery, .carShow, .donate, .ourStory, .events, .contactUs, .settings:
-                return nil // Will use WebView, EventsView, or text instead
+            case .favorites, .carShowSponsors, .sponsors, .gallery, .carShow, .donate, .ourStory, .events, .contactUs, .settings:
+                return nil // Will use WebView, EventsView, FavoritesView, or text instead
             }
         }
         
@@ -279,6 +280,11 @@ struct ContentView: View {
                                 // Show WebView for Car Show and Donate options
                                 WebView(urlString: webURL)
                                     .padding(.horizontal)
+                                    .padding(.top, 5)
+                                    .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
+                            } else if homeImageSelection == .favorites {
+                                // Show FavoritesView for Favorites option
+                                FavoritesView()
                                     .padding(.top, 5)
                                     .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
                             } else if homeImageSelection == .events {
