@@ -94,7 +94,7 @@ struct ContentView: View {
         
         var showInMenu: Bool {
             // Don't show favorites, welcome, events, car show sponsors, registration, and donate in menu dropdown
-            self != .favorites && self != .welcome && self != .events && self != .carShowSponsors && self != .carShow && self != .donate && self != .gallery && self != .carShowInfo && self != .sponsors
+            self != .favorites && self != .welcome && self != .events && self != .carShowSponsors && self != .carShow && self != .donate && self != .carShowInfo && self != .sponsors
         }
     }
     
@@ -196,12 +196,16 @@ struct ContentView: View {
                                 Button(action: {
                                     homeImageSelection = .events
                                 }) {
-                                    Text("Events")
-                                        .font(.system(size: 13))
-                                        .foregroundColor(.primary)
-                                        .frame(maxWidth: .infinity)
-                                        .padding(.vertical, 4)
-                                        .background(Color(UIColor.secondarySystemFill), in: Capsule())
+                                    HStack(spacing: 3) {
+                                        Image(systemName: "car.fill")
+                                            .font(.system(size: 11))
+                                        Text("Events")
+                                    }
+                                    .font(.system(size: 13))
+                                    .foregroundColor(.primary)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 4)
+                                    .background(Color(UIColor.secondarySystemFill), in: Capsule())
                                 }
                                 .frame(maxWidth: .infinity)
                                 
@@ -212,12 +216,16 @@ struct ContentView: View {
                                 Button(action: {
                                     homeImageSelection = .favorites
                                 }) {
-                                    Text("Favorites")
-                                        .font(.system(size: 13))
-                                        .foregroundColor(.primary)
-                                        .frame(maxWidth: .infinity)
-                                        .padding(.vertical, 4)
-                                        .background(Color(UIColor.secondarySystemFill), in: Capsule())
+                                    HStack(spacing: 3) {
+                                        Image(systemName: "star.fill")
+                                            .font(.system(size: 11))
+                                        Text("Favorites")
+                                    }
+                                    .font(.system(size: 13))
+                                    .foregroundColor(.primary)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 4)
+                                    .background(Color(UIColor.secondarySystemFill), in: Capsule())
                                 }
                                 .frame(maxWidth: .infinity)
                             }

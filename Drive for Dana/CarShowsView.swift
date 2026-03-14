@@ -7,6 +7,8 @@
 
 import SwiftUI
 import Combine
+import CoreLocation
+import WeatherKit
 
 // MARK: - Car Show Model
 struct CarShow: Identifiable, Equatable, Codable {
@@ -395,6 +397,8 @@ struct CarShowsView: View {
 struct CarShowCard: View {
     let carShow: CarShow
     @ObservedObject private var favoritesManager = FavoritesManager.shared
+    @State private var weatherItem: IdentifiableLocation?
+    @State private var isGeocodingAddress = false
     
     // Check if the date field says "Rain Dates"
     private var isRainDateRecord: Bool {
@@ -594,6 +598,30 @@ struct CarShowCard: View {
                 }
             }
             
+            // Check Weather Button (only show if address exists and NOT a "Rain Dates" record)
+            if !carShow.address.isEmpty && !isRainDateRecord {
+                Button(action: {
+                    openInWeather()
+                }) {
+                    HStack {
+                        if isGeocodingAddress {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                        } else {
+                            Image(systemName: "cloud.sun")
+                        }
+                        Text("Check Weather")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(Color.blue.opacity(0.1))
+                    .foregroundColor(.blue)
+                    .cornerRadius(8)
+                }
+                .disabled(isGeocodingAddress)
+                .padding(.top, 4)
+            }
+            
             // Favorite Button (only show if NOT a "Rain Dates" record)
             if !isRainDateRecord {
                 Button(action: {
@@ -605,7 +633,7 @@ struct CarShowCard: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
-                    .background(favoritesManager.isFavorite(carShow) ? Color.orange.opacity(0.1) : Color.blue.opacity(0.1))
+                    .background(favoritesManager.isFavorite(carShow) ? Color.orange.opacity(0.1) : Color.blue.opacity(0.2))
                     .foregroundColor(favoritesManager.isFavorite(carShow) ? .orange : .blue)
                     .cornerRadius(8)
                 }
@@ -622,6 +650,9 @@ struct CarShowCard: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(isRainDateRecord ? Color.gray : Color.clear, lineWidth: 2)
         )
+        .sheet(item: $weatherItem) { item in
+            WeatherView(location: item.location, address: item.address)
+        }
     }
     
     
@@ -635,6 +666,35 @@ struct CarShowCard: View {
                 if let webURL = URL(string: "https://maps.apple.com/?q=\(encodedLocation)") {
                     UIApplication.shared.open(webURL)
                 }
+            }
+        }
+    }
+    
+    private func openInWeather() {
+        // Show loading indicator
+        isGeocodingAddress = true
+        
+        // Geocode the address to get coordinates for WeatherKit
+        let geocoder = CLGeocoder()
+        
+        geocoder.geocodeAddressString(carShow.address) { placemarks, error in
+            DispatchQueue.main.async {
+                // Hide loading indicator
+                self.isGeocodingAddress = false
+                
+                if let error = error {
+                    print("Geocoding error: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let placemark = placemarks?.first,
+                      let location = placemark.location else {
+                    print("No location found for address")
+                    return
+                }
+                
+                // Create identifiable location item - this will trigger the sheet to present
+                self.weatherItem = IdentifiableLocation(location: location, address: self.carShow.address)
             }
         }
     }

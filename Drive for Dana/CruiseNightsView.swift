@@ -7,6 +7,8 @@
 
 import SwiftUI
 import Combine
+import CoreLocation
+import WeatherKit
 
 // MARK: - Cruise Night Model
 struct CruiseNight: Identifiable, Equatable, Codable {
@@ -269,6 +271,8 @@ struct CruiseNightsView: View {
 // MARK: - Cruise Night Card Component
 struct CruiseNightCard: View {
     let cruiseNight: CruiseNight
+    @State private var weatherItem: IdentifiableLocation?
+    @State private var isGeocodingAddress = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -350,10 +354,37 @@ struct CruiseNightCard: View {
                     .font(.caption)
                     .lineLimit(3)
             }
+            
+            // Check Weather Button (only show if location exists)
+            if !cruiseNight.location.isEmpty {
+                Button(action: {
+                    openInWeather()
+                }) {
+                    HStack {
+                        if isGeocodingAddress {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                        } else {
+                            Image(systemName: "cloud.sun")
+                        }
+                        Text("Check Weather")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(Color.blue.opacity(0.1))
+                    .foregroundColor(.blue)
+                    .cornerRadius(8)
+                }
+                .disabled(isGeocodingAddress)
+                .padding(.top, 4)
+            }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 2)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .sheet(item: $weatherItem) { item in
+            WeatherView(location: item.location, address: item.address)
+        }
     }
     
     private func openInMaps() {
@@ -366,6 +397,35 @@ struct CruiseNightCard: View {
                 if let webURL = URL(string: "https://maps.apple.com/?q=\(encodedLocation)") {
                     UIApplication.shared.open(webURL)
                 }
+            }
+        }
+    }
+    
+    private func openInWeather() {
+        // Show loading indicator
+        isGeocodingAddress = true
+        
+        // Geocode the address to get coordinates for WeatherKit
+        let geocoder = CLGeocoder()
+        
+        geocoder.geocodeAddressString(cruiseNight.location) { placemarks, error in
+            DispatchQueue.main.async {
+                // Hide loading indicator
+                self.isGeocodingAddress = false
+                
+                if let error = error {
+                    print("Geocoding error: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let placemark = placemarks?.first,
+                      let location = placemark.location else {
+                    print("No location found for address")
+                    return
+                }
+                
+                // Create identifiable location item - this will trigger the sheet to present
+                self.weatherItem = IdentifiableLocation(location: location, address: self.cruiseNight.location)
             }
         }
     }

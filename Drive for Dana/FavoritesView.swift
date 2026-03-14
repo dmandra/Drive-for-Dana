@@ -6,6 +6,15 @@
 //
 
 import SwiftUI
+import CoreLocation
+import WeatherKit
+
+// MARK: - Identifiable CLLocation Wrapper
+struct IdentifiableLocation: Identifiable {
+    let id = UUID()
+    let location: CLLocation
+    let address: String
+}
 
 struct FavoritesView: View {
     @ObservedObject private var favoritesManager = FavoritesManager.shared
@@ -58,6 +67,8 @@ struct FavoriteCarShowCard: View {
     let carShow: CarShow
     @ObservedObject private var favoritesManager = FavoritesManager.shared
     @State private var showDeleteConfirmation = false
+    @State private var weatherItem: IdentifiableLocation?
+    @State private var isGeocodingAddress = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -242,6 +253,30 @@ struct FavoriteCarShowCard: View {
                 }
             }
             
+            // Check Weather Button (only show if address exists)
+            if !carShow.address.isEmpty {
+                Button(action: {
+                    openInWeather()
+                }) {
+                    HStack {
+                        if isGeocodingAddress {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                        } else {
+                            Image(systemName: "cloud.sun")
+                        }
+                        Text("Check Weather")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(Color.blue.opacity(0.1))
+                    .foregroundColor(.blue)
+                    .cornerRadius(8)
+                }
+                .disabled(isGeocodingAddress)
+                .padding(.top, 4)
+            }
+            
             // Delete Button
             Button(action: {
                 showDeleteConfirmation = true
@@ -268,6 +303,9 @@ struct FavoriteCarShowCard: View {
         }
         .padding(10)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .sheet(item: $weatherItem) { item in
+            WeatherView(location: item.location, address: item.address)
+        }
     }
     
     private func openInMaps() {
@@ -281,6 +319,175 @@ struct FavoriteCarShowCard: View {
                     UIApplication.shared.open(webURL)
                 }
             }
+        }
+    }
+    
+    private func openInWeather() {
+        // Show loading indicator
+        isGeocodingAddress = true
+        
+        // Geocode the address to get coordinates for WeatherKit
+        let geocoder = CLGeocoder()
+        
+        geocoder.geocodeAddressString(carShow.address) { placemarks, error in
+            DispatchQueue.main.async {
+                // Hide loading indicator
+                self.isGeocodingAddress = false
+                
+                if let error = error {
+                    print("Geocoding error: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let placemark = placemarks?.first,
+                      let location = placemark.location else {
+                    print("No location found for address")
+                    return
+                }
+                
+                // Create identifiable location item - this will trigger the sheet to present
+                self.weatherItem = IdentifiableLocation(location: location, address: self.carShow.address)
+            }
+        }
+    }
+}
+
+// MARK: - Weather View
+struct WeatherView: View {
+    let location: CLLocation
+    let address: String
+    @Environment(\.dismiss) private var dismiss
+    @State private var weather: Weather?
+    @State private var isLoading = true
+    @State private var errorMessage: String?
+    
+    var body: some View {
+        NavigationView {
+            Group {
+                if isLoading {
+                    ProgressView("Loading weather...")
+                        .padding()
+                } else if let errorMessage = errorMessage {
+                    VStack(spacing: 16) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 48))
+                            .foregroundStyle(.secondary)
+                        Text("Unable to load weather")
+                            .font(.headline)
+                        Text(errorMessage)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                    }
+                    .padding()
+                } else if let weather = weather {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 20) {
+                            // Location
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(address)
+                                    .font(.headline)
+                                Text("10-Day Forecast")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(.horizontal)
+                            
+                            // Current Weather
+                            VStack(spacing: 12) {
+                                HStack {
+                                    Image(systemName: weather.currentWeather.symbolName)
+                                        .font(.system(size: 60))
+                                        .symbolRenderingMode(.multicolor)
+                                    
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(weather.currentWeather.temperature.formatted())
+                                            .font(.system(size: 48, weight: .thin))
+                                        Text(weather.currentWeather.condition.description)
+                                            .font(.title3)
+                                    }
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                            }
+                            .padding(.horizontal)
+                            
+                            // Daily Forecast
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Daily Forecast")
+                                    .font(.headline)
+                                    .padding(.horizontal)
+                                
+                                ForEach(weather.dailyForecast, id: \.date) { day in
+                                    HStack {
+                                        Text(day.date, format: .dateTime.weekday(.abbreviated).month().day())
+                                            .frame(width: 80, alignment: .leading)
+                                        
+                                        Image(systemName: day.symbolName)
+                                            .symbolRenderingMode(.multicolor)
+                                            .frame(width: 40)
+                                        
+                                        Text(day.condition.description)
+                                            .font(.subheadline)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        
+                                        Text(day.lowTemperature.formatted())
+                                            .foregroundStyle(.secondary)
+                                        
+                                        Text("/")
+                                            .foregroundStyle(.secondary)
+                                        
+                                        Text(day.highTemperature.formatted())
+                                    }
+                                    .padding(.horizontal)
+                                    .padding(.vertical, 4)
+                                    
+                                    if day.date != weather.dailyForecast.last?.date {
+                                        Divider()
+                                            .padding(.horizontal)
+                                    }
+                                }
+                            }
+                            .padding(.vertical)
+                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                            .padding(.horizontal)
+                        }
+                        .padding(.vertical)
+                    }
+                }
+            }
+            .navigationTitle("Weather")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+            .task {
+                await loadWeather()
+            }
+        }
+    }
+    
+    private func loadWeather() async {
+        do {
+            let weatherService = WeatherService.shared
+            let weather = try await weatherService.weather(for: location)
+            
+            await MainActor.run {
+                self.weather = weather
+                self.isLoading = false
+            }
+        } catch {
+            await MainActor.run {
+                self.errorMessage = error.localizedDescription
+                self.isLoading = false
+            }
+            print("Weather error: \(error)")
         }
     }
 }
