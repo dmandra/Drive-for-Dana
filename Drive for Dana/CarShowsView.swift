@@ -598,44 +598,46 @@ struct CarShowCard: View {
                 }
             }
             
-            // Check Weather Button (only show if address exists and NOT a "Rain Dates" record)
-            if !carShow.address.isEmpty && !isRainDateRecord {
-                Button(action: {
-                    openInWeather()
-                }) {
-                    HStack {
-                        if isGeocodingAddress {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle())
-                        } else {
-                            Image(systemName: "cloud.sun")
-                        }
-                        Text("Check Weather")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(Color.blue.opacity(0.1))
-                    .foregroundColor(.blue)
-                    .cornerRadius(8)
-                }
-                .disabled(isGeocodingAddress)
-                .padding(.top, 4)
-            }
-            
-            // Favorite Button (only show if NOT a "Rain Dates" record)
+            // Weather and Favorite Buttons (side by side)
             if !isRainDateRecord {
-                Button(action: {
-                    favoritesManager.toggleFavorite(carShow)
-                }) {
-                    HStack {
-                        Image(systemName: favoritesManager.isFavorite(carShow) ? "star.fill" : "star")
-                        Text(favoritesManager.isFavorite(carShow) ? "Remove from Favorites" : "Add to Favorites")
+                HStack(spacing: 8) {
+                    // Check Weather Button (only show if address exists)
+                    if !carShow.address.isEmpty {
+                        Button(action: {
+                            openInWeather()
+                        }) {
+                            HStack {
+                                if isGeocodingAddress {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle())
+                                } else {
+                                    Image(systemName: "cloud.sun")
+                                }
+                                Text("Weather")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(Color.blue.opacity(0.2))
+                            .foregroundColor(.blue)
+                            .cornerRadius(8)
+                        }
+                        .disabled(isGeocodingAddress)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(favoritesManager.isFavorite(carShow) ? Color.orange.opacity(0.1) : Color.blue.opacity(0.2))
-                    .foregroundColor(favoritesManager.isFavorite(carShow) ? .orange : .blue)
-                    .cornerRadius(8)
+                    
+                    // Favorite Button
+                    Button(action: {
+                        favoritesManager.toggleFavorite(carShow)
+                    }) {
+                        HStack {
+                            Image(systemName: favoritesManager.isFavorite(carShow) ? "star.fill" : "star")
+                            Text(favoritesManager.isFavorite(carShow) ? "Unfavorite" : "Add Favorite")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(favoritesManager.isFavorite(carShow) ? Color.orange.opacity(0.1) : Color.blue.opacity(0.2))
+                        .foregroundColor(favoritesManager.isFavorite(carShow) ? .orange : .blue)
+                        .cornerRadius(8)
+                    }
                 }
                 .padding(.top, 4)
             }

@@ -253,53 +253,55 @@ struct FavoriteCarShowCard: View {
                 }
             }
             
-            // Check Weather Button (only show if address exists)
-            if !carShow.address.isEmpty {
+            // Weather and Remove Buttons (side by side)
+            HStack(spacing: 8) {
+                // Check Weather Button (only show if address exists)
+                if !carShow.address.isEmpty {
+                    Button(action: {
+                        openInWeather()
+                    }) {
+                        HStack {
+                            if isGeocodingAddress {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                            } else {
+                                Image(systemName: "cloud.sun")
+                            }
+                            Text("Weather")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(Color.blue.opacity(0.2))
+                        .foregroundColor(.blue)
+                        .cornerRadius(8)
+                    }
+                    .disabled(isGeocodingAddress)
+                }
+                
+                // Delete Button
                 Button(action: {
-                    openInWeather()
+                    showDeleteConfirmation = true
                 }) {
                     HStack {
-                        if isGeocodingAddress {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle())
-                        } else {
-                            Image(systemName: "cloud.sun")
-                        }
-                        Text("Check Weather")
+                        Image(systemName: "trash")
+                        Text("Remove")
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
-                    .background(Color.blue.opacity(0.1))
-                    .foregroundColor(.blue)
+                    .background(Color.red.opacity(0.1))
+                    .foregroundColor(.red)
                     .cornerRadius(8)
                 }
-                .disabled(isGeocodingAddress)
-                .padding(.top, 4)
-            }
-            
-            // Delete Button
-            Button(action: {
-                showDeleteConfirmation = true
-            }) {
-                HStack {
-                    Image(systemName: "trash")
-                    Text("Remove from Favorites")
+                .alert("Remove from Favorites?", isPresented: $showDeleteConfirmation) {
+                    Button("Cancel", role: .cancel) { }
+                    Button("Remove", role: .destructive) {
+                        favoritesManager.removeFavorite(carShow)
+                    }
+                } message: {
+                    Text("Are you sure you want to remove \"\(carShow.name)\" from your favorites?")
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background(Color.red.opacity(0.1))
-                .foregroundColor(.red)
-                .cornerRadius(8)
             }
             .padding(.top, 4)
-            .alert("Remove from Favorites?", isPresented: $showDeleteConfirmation) {
-                Button("Cancel", role: .cancel) { }
-                Button("Remove", role: .destructive) {
-                    favoritesManager.removeFavorite(carShow)
-                }
-            } message: {
-                Text("Are you sure you want to remove \"\(carShow.name)\" from your favorites?")
-            }
         }
         .padding(10)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
