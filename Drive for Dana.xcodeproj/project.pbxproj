@@ -10,9 +10,22 @@
 		163305AD2F4AC66C00F101CA /* Drive for Dana.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Drive for Dana.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		16644BD32F66239600F76DE3 /* Exceptions for "Drive for Dana" folder in "Drive for Dana" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Drive-for-Dana-Info.plist",
+			);
+			target = 163305AC2F4AC66C00F101CA /* Drive for Dana */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		163305AF2F4AC66C00F101CA /* Drive for Dana */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				16644BD32F66239600F76DE3 /* Exceptions for "Drive for Dana" folder in "Drive for Dana" target */,
+			);
 			path = "Drive for Dana";
 			sourceTree = "<group>";
 		};
@@ -259,6 +272,7 @@
 				DEVELOPMENT_TEAM = 4CAHN9ARQZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Drive-for-Dana-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Drive For Dana Foundation";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.reference";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -300,6 +314,7 @@
 				DEVELOPMENT_TEAM = 4CAHN9ARQZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Drive-for-Dana-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Drive For Dana Foundation";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.reference";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
