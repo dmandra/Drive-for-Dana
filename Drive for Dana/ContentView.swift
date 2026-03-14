@@ -56,7 +56,6 @@ struct ContentView: View {
         case carShowSponsors = "Car Show Sponsors"
         case donate = "Donate"
         case gallery = "Gallery"
-        case ourStory = "Our Story"
         case events = "Events"
         case contactUs = "Contact Us"
         case settings = "Settings"
@@ -68,7 +67,7 @@ struct ContentView: View {
                 return "HomeImage" // Home Page Image
             case .carShowInfo:
                 return "CarShowImage"
-            case .favorites, .carShowSponsors, .sponsors, .gallery, .carShow, .donate, .ourStory, .events, .contactUs, .settings:
+            case .favorites, .carShowSponsors, .sponsors, .gallery, .carShow, .donate, .events, .contactUs, .settings:
                 return nil // Will use WebView, EventsView, FavoritesView, or text instead
             }
         }
@@ -93,34 +92,9 @@ struct ContentView: View {
             }
         }
         
-        var storyText: String? {
-            switch self {
-            case .ourStory:
-                return """
-                OUR STORY
-                
-                Dana Ryan suffered a near fatal drowning on July 9, 2018. Dana’s parents were told she suffered a traumatic brain injury from the drowning and the doctors gave her 3 weeks to live. Dana never gave up and kept fighting. We met Dana that September and immediately knew we had to help her. We were planning a car show and decided at that moment to create Drive for Dana, make the car show a fundraiser and donate all the money to her therapy. We had a very successful show and immediately began work on the next. Unfortunately, the pandemic delayed us a year.
-                 
-                During 2021, we created many goals for Drive for Dana. A few of those goals were growing our show, creating a 501(c)(3) nonprofit organization, expanding our reach to help other medically fragile children on Long Island and finding corporate sponsors who share our goal of helping Long Island children in need.
-                ​
-                In 2022, we continued to provide Dana with many of her much needed services and equipment.
-                Drive for Dana also provided three additional families of medically fragile children with equipment to help support their children.
-                In 2023, we continued to provide these services and we helped an additional 10 families throughout the year.  Drive For Dana had an amazing year thanks to all of our supporters and sponsors of our events.
-                In 2024 we introduced our Winter Breakfast Fundraiser, it was a fantastic success and will now be an annual event.  We also partnered with Bahama Breeze of Lake Grove for a Top Chef event that was absolutely fantastic, we we chosen as the charity again and are so excited.  All of these events and our car show allowed us to continue Dana's treatments, help other children and families as well as do a holiday wish list for our kids. 2024 was a great year.
-                See you soon at a Drive For Dana Event.
-                 
-                Dana, Jacob, Pennie, Emily, Carmelo, Jackson, Sophia, Lauren, Amina, Don, Kayla, Addie, Kaleb and the rest of our kids continue to fight and are making strides every day.
-                """
-            case .contactUs:
-                return nil // Will use ContactUsView instead
-            default:
-                return nil
-            }
-        }
-        
         var showInMenu: Bool {
-            // Don't show favorites, welcome, sponsors, car show sponsors, and registration in menu dropdown
-            self != .favorites && self != .welcome && self != .sponsors && self != .carShowSponsors && self != .carShow
+            // Don't show favorites, welcome, events, car show sponsors, registration, and donate in menu dropdown
+            self != .favorites && self != .welcome && self != .events && self != .carShowSponsors && self != .carShow && self != .donate && self != .gallery && self != .carShowInfo && self != .sponsors
         }
     }
     
@@ -215,14 +189,14 @@ struct ContentView: View {
                                 }
                                 .frame(maxWidth: .infinity)
                                 
-                                // Gap between Menu and Sponsors
+                                // Gap between Menu and Events
                                 Spacer().frame(width: 5)
                                 
-                                // Sponsors segment
+                                // Events segment
                                 Button(action: {
-                                    homeImageSelection = .sponsors
+                                    homeImageSelection = .events
                                 }) {
-                                    Text("Sponsors")
+                                    Text("Events")
                                         .font(.system(size: 13))
                                         .foregroundColor(.primary)
                                         .frame(maxWidth: .infinity)
@@ -231,7 +205,7 @@ struct ContentView: View {
                                 }
                                 .frame(maxWidth: .infinity)
                                 
-                                // Gap between Sponsors and Favorites
+                                // Gap between Events and Favorites
                                 Spacer().frame(width: 5)
                                 
                                 // Favorites segment
@@ -316,17 +290,6 @@ struct ContentView: View {
                                 SettingsView()
                                     .padding(.top, 5)
                                     .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
-                            } else if let storyText = homeImageSelection.storyText {
-                                // Show text for Our Story
-                                ScrollView {
-                                    Text(storyText)
-                                        .font(.body)
-                                        .padding()
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                }
-                                .padding(.horizontal)
-                                .padding(.top, 5)
-                                .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
                             }
                         }
                         
