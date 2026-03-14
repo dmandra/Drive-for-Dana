@@ -165,37 +165,45 @@ struct CarShowsView: View {
                 .padding()
                 Spacer()
             } else {
-                ScrollView {
-                    VStack(spacing: 4) {
-                        // Text message above first car show
-                        //Text("Upcoming Car Shows for \(months[monthIndex])")
-                        //Text("Check Back Often")
-                           // .font(.subheadline)
-                           // .foregroundStyle(.secondary)
-                           // .padding(.vertical, 2)
-                            //.frame(maxWidth: .infinity, alignment: .center)
-                        Text("Contact Us from the Home Menu for adding your event or for corrections.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .padding(.vertical, 2)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                        
-                        ForEach(carShows) { show in
-                            CarShowCard(carShow: show)
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        VStack(spacing: 4) {
+                            // Text message above first car show
+                            //Text("Upcoming Car Shows for \(months[monthIndex])")
+                            //Text("Check Back Often")
+                               // .font(.subheadline)
+                               // .foregroundStyle(.secondary)
+                               // .padding(.vertical, 2)
+                                //.frame(maxWidth: .infinity, alignment: .center)
+                            Text("Contact Us from the Home Menu for adding your event or for corrections.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .padding(.vertical, 2)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .id("top")
                             
-                            Divider()
+                            ForEach(carShows) { show in
+                                CarShowCard(carShow: show)
+                                
+                                Divider()
+                            }
+                            
+                            // Text message below last car show
+                            Text("Past shows are filtered out in order to show future shows only. Please verify details directly with the car show organizers.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .padding(.vertical, 8)
+                                .frame(maxWidth: .infinity, alignment: .center)
                         }
-                        
-                        // Text message below last car show
-                        Text("Past shows are filtered out in order to show future shows only. Please verify details directly with the car show organizers.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .padding(.vertical, 8)
-                            .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.horizontal)
+                        .padding(.top, 4)
+                        .padding(.bottom)
                     }
-                    .padding(.horizontal)
-                    .padding(.top, 4)
-                    .padding(.bottom)
+                    .onChange(of: monthIndex) {
+                        withAnimation {
+                            proxy.scrollTo("top", anchor: .top)
+                        }
+                    }
                 }
             }
         }

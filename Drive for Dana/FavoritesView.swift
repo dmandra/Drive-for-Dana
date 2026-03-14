@@ -33,9 +33,9 @@ struct FavoritesView: View {
                 ScrollView {
                     VStack(spacing: 4) {
                         // Header text
-                        Text("Car Show Favorites")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        Text("Car Show Saved Favorites")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
                             .padding(.vertical, 8)
                             .frame(maxWidth: .infinity, alignment: .center)
                         

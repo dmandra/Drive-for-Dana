@@ -50,16 +50,16 @@ struct ContentView: View {
     private enum HomeImageOption: String, CaseIterable, Identifiable {
         case welcome = "Welcome" // Not shown in menu, only on app launch and Home being selected
         case favorites = "Car Show Favorites"
-        case carShowInfo = "DFD Car Show Info"
-        case carShow = "DFD Car Show Registration"
+        case carShowInfo = "DFD Car Show Registration"
+        case carShow = "Registration"
         case sponsors = "Sponsors"
         case carShowSponsors = "Car Show Sponsors"
+        case donate = "Donate"
         case gallery = "Gallery"
         case ourStory = "Our Story"
         case events = "Events"
         case contactUs = "Contact Us"
         case settings = "Settings"
-        case donate = "Donate"
         var id: String { rawValue }
         
         var imageName: String? {
@@ -119,8 +119,8 @@ struct ContentView: View {
         }
         
         var showInMenu: Bool {
-            // Don't show donate, welcome, sponsors, and car show sponsors in menu dropdown
-            self != .donate && self != .welcome && self != .sponsors && self != .carShowSponsors
+            // Don't show favorites, welcome, sponsors, car show sponsors, and registration in menu dropdown
+            self != .favorites && self != .welcome && self != .sponsors && self != .carShowSponsors && self != .carShow
         }
     }
     
@@ -192,7 +192,7 @@ struct ContentView: View {
                     case .home:
                         // Home Tab with image selection menu
                         VStack(spacing: 0) {
-                            // Segmented-style control with Menu, Sponsors, and Donate
+                            // Segmented-style control with Menu, Sponsors, and Favorites
                             HStack(spacing: 0) {
                                 // Menu dropdown (first segment)
                                 Menu {
@@ -231,14 +231,14 @@ struct ContentView: View {
                                 }
                                 .frame(maxWidth: .infinity)
                                 
-                                // Gap between Sponsors and Donate
+                                // Gap between Sponsors and Favorites
                                 Spacer().frame(width: 5)
                                 
-                                // Donate segment
+                                // Favorites segment
                                 Button(action: {
-                                    homeImageSelection = .donate
+                                    homeImageSelection = .favorites
                                 }) {
-                                    Text(LinkAction.donate.rawValue)
+                                    Text("Favorites")
                                         .font(.system(size: 13))
                                         .foregroundColor(.primary)
                                         .frame(maxWidth: .infinity)
@@ -255,11 +255,25 @@ struct ContentView: View {
                             // Content under the menu - changes based on homeImageSelection
                             if let imageName = homeImageSelection.imageName {
                                 // Show image for non-webview options
-                                Image(imageName)
-                                    .resizable()
-                                    .padding(.horizontal)
-                                    .padding(.top, 5)
+                                if homeImageSelection == .carShowInfo {
+                                    // Make CarShowImage clickable to load registration
+                                    Button(action: {
+                                        homeImageSelection = .carShow
+                                    }) {
+                                        Image(imageName)
+                                            .resizable()
+                                            //.padding(.horizontal)
+                                            .padding(.top, 5)
+                                    }
+                                    .buttonStyle(.plain)
                                     .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
+                                } else {
+                                    Image(imageName)
+                                        .resizable()
+                                        //.padding(.horizontal)
+                                        .padding(.top, 5)
+                                        .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
+                                }
                             } else if homeImageSelection == .sponsors {
                                 // Show SponsorsView for Official Sponsors
                                 SponsorsView()
@@ -314,8 +328,6 @@ struct ContentView: View {
                                 .padding(.top, 5)
                                 .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
                             }
-                            
-                            Spacer()
                         }
                         
                     case .carShows:
