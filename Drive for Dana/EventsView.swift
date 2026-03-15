@@ -100,10 +100,10 @@ struct EventsView: View {
                             Text("📅 MORE EVENTS COMING SOON")
                                 .font(.headline)
                             
-                            Text("Stay tuned for additional fundraising events throughout the year. Follow us on social media for the latest updates!")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.center)
+                            //Text("Stay tuned for additional fundraising events throughout the year. Follow us on social //media for the latest updates!")
+                                //.font(.caption)
+                                //.foregroundStyle(.secondary)
+                                //.multilineTextAlignment(.center)
                         }
                         .padding(.horizontal)
                         .padding(.top, 8)
@@ -228,24 +228,32 @@ struct EventCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Event Name (with emoji if present)
-            if !event.name.isEmpty {
-                Text(event.name)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            
             // Date
             if !event.date.isEmpty {
                 HStack(spacing: 4) {
                     Image(systemName: "calendar")
                         .font(.subheadline)
                     Text("\(event.date)")
-                    //Text("Date: \(event.date)")
                         .font(.subheadline)
+                        .bold()
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(6)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    //Text("Date: \(event.date)")
+                        //.font(.subheadline)
                         //.fontWeight(.bold)
                 }
+            }
+            
+            // Event Name (with emoji if present)
+            if !event.name.isEmpty {
+                Text(event.name)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             
             // Time
@@ -271,6 +279,7 @@ struct EventCard: View {
                             .font(.subheadline)
                             //.fontWeight(.bold)
                             .foregroundStyle(.primary)
+                            .bold()
                         Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .font(.subheadline)
@@ -304,6 +313,7 @@ struct EventCard: View {
                             .foregroundStyle(.blue)
                     }
                 }
+                .foregroundColor(.blue)
                 .buttonStyle(.plain)
             }
             
@@ -324,6 +334,7 @@ struct EventCard: View {
                             .foregroundStyle(.blue)
                     }
                 }
+                .foregroundColor(.blue)
                 .buttonStyle(.plain)
             }
             
@@ -345,6 +356,7 @@ struct EventCard: View {
                             .foregroundStyle(.blue)
                     }
                 }
+                .foregroundColor(.blue)
                 .buttonStyle(.plain)
             }
             
