@@ -17,6 +17,10 @@ struct Event: Identifiable, Equatable {
     let time: String
     let location: String
     let notes: String
+    let phone: String
+    let email: String
+    let website: String
+    
 }
 
 // MARK: - Events View
@@ -71,14 +75,15 @@ struct EventsView: View {
                     VStack(spacing: 4) {
                         // Header text
                         VStack(spacing: 8) {
-                            Text("UPCOMING 2026 EVENTS")
+                            Text("UPCOMING EVENTS")
                                 .font(.title2)
                                 .fontWeight(.bold)
+                            //Divider()
                             
-                            Text("Join us at our upcoming Drive for Dana events! All proceeds support medically fragile children across Long Island.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.center)
+                            //Text("Join us at our upcoming Drive for Dana events! All proceeds support medically fragile //children across Long Island.")
+                                //.font(.subheadline)
+                                //.foregroundStyle(.secondary)
+                                //.multilineTextAlignment(.center)
                         }
                         .padding(.horizontal)
                         .padding(.top, 8)
@@ -160,13 +165,16 @@ struct EventsView: View {
             let columns = parseCSVRow(row)
             
             // Expecting 5 columns: Name, Date, Time, Location, Notes
-            guard columns.count >= 5 else { continue }
+            guard columns.count >= 8 else { continue }
             
             let name = columns[0].trimmingCharacters(in: .whitespaces)
             let date = columns[1].trimmingCharacters(in: .whitespaces)
             let time = columns[2].trimmingCharacters(in: .whitespaces)
             let location = columns[3].trimmingCharacters(in: .whitespaces)
             let notes = columns[4].trimmingCharacters(in: .whitespaces)
+            let phone = columns[5].trimmingCharacters(in: .whitespaces)
+            let email = columns[6].trimmingCharacters(in: .whitespaces)
+            let website = columns[7].trimmingCharacters(in: .whitespaces)
             
             // Skip rows where essential fields (name) are empty
             guard !name.isEmpty else { continue }
@@ -177,7 +185,11 @@ struct EventsView: View {
                 date: date,
                 time: time,
                 location: location,
-                notes: notes
+                notes: notes,
+                phone: phone,
+                email: email,
+                website: website
+                
             )
             
             parsedEvents.append(event)
@@ -274,7 +286,70 @@ struct EventCard: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
+            
+            // Phone (tappable to call)
+            if !event.phone.isEmpty {
+                Button(action: {
+                    callPhone()
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "phone.fill")
+                            .foregroundStyle(.green)
+                        Text(event.phone)
+                            .font(.subheadline)
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        Image(systemName: "arrow.up.right.square")
+                            .font(.subheadline)
+                            .foregroundStyle(.blue)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+            
+            // Email (tappable to compose)
+            if !event.email.isEmpty {
+                Button(action: {
+                    sendEmail()
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "envelope.fill")
+                            .foregroundStyle(.blue)
+                        Text(event.email)
+                            .font(.subheadline)
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        Image(systemName: "arrow.up.right.square")
+                            .font(.subheadline)
+                            .foregroundStyle(.blue)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+            
+            // Website (tappable to open in Safari)
+            if !event.website.isEmpty {
+                Button(action: {
+                    openWebsite()
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "globe")
+                            .foregroundStyle(.blue)
+                        Text(event.website)
+                            .font(.subheadline)
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                        Spacer()
+                        Image(systemName: "arrow.up.right.square")
+                            .font(.subheadline)
+                            .foregroundStyle(.blue)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+            
         }
+
         .padding(12)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
     }
@@ -290,6 +365,42 @@ struct EventCard: View {
                     UIApplication.shared.open(webURL)
                 }
             }
+        }
+    }
+    
+    private func callPhone() {
+        // Remove any formatting characters to create a clean phone number
+        let cleanedPhone = event.phone.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+        
+        if let url = URL(string: "tel:\(cleanedPhone)") {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }
+    }
+    
+    private func sendEmail() {
+        // Extract email if it contains extra text
+        let emailAddress = event.email.trimmingCharacters(in: .whitespaces)
+        let encodedEmail = emailAddress.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? emailAddress
+        
+        if let url = URL(string: "mailto:\(encodedEmail)") {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }
+    }
+    
+    private func openWebsite() {
+        var urlString = event.website.trimmingCharacters(in: .whitespaces)
+        
+        // Add https:// if no protocol is specified
+        if !urlString.lowercased().hasPrefix("http://") && !urlString.lowercased().hasPrefix("https://") {
+            urlString = "https://" + urlString
+        }
+        
+        if let url = URL(string: urlString) {
+            UIApplication.shared.open(url)
         }
     }
 }

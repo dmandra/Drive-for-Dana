@@ -362,6 +362,7 @@ struct WeatherView: View {
     @State private var weather: Weather?
     @State private var isLoading = true
     @State private var errorMessage: String?
+    @State private var weatherAttribution: WeatherAttribution?
     
     var body: some View {
         NavigationView {
@@ -404,7 +405,7 @@ struct WeatherView: View {
                                         .symbolRenderingMode(.multicolor)
                                     
                                     VStack(alignment: .leading, spacing: 4) {
-                                        Text(weather.currentWeather.temperature.formatted())
+                                        Text(weather.currentWeather.temperature.formatted(.measurement(width: .abbreviated, usage: .weather, numberFormatStyle: .number.precision(.fractionLength(0)))))
                                             .font(.system(size: 48, weight: .thin))
                                         Text(weather.currentWeather.condition.description)
                                             .font(.title3)
@@ -435,13 +436,13 @@ struct WeatherView: View {
                                             .font(.subheadline)
                                             .frame(maxWidth: .infinity, alignment: .leading)
                                         
-                                        Text(day.lowTemperature.formatted())
+                                        Text(day.lowTemperature.formatted(.measurement(width: .abbreviated, usage: .weather, numberFormatStyle: .number.precision(.fractionLength(0)))))
                                             .foregroundStyle(.secondary)
                                         
                                         Text("/")
                                             .foregroundStyle(.secondary)
                                         
-                                        Text(day.highTemperature.formatted())
+                                        Text(day.highTemperature.formatted(.measurement(width: .abbreviated, usage: .weather, numberFormatStyle: .number.precision(.fractionLength(0)))))
                                     }
                                     .padding(.horizontal)
                                     .padding(.vertical, 4)
@@ -455,6 +456,40 @@ struct WeatherView: View {
                             .padding(.vertical)
                             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
                             .padding(.horizontal)
+                            
+                            // MARK: - Weather Attribution (Required by Apple)
+                            if let attribution = weatherAttribution {
+                                VStack(spacing: 8) {
+                                    Divider()
+                                        .padding(.horizontal)
+                                    
+                                    Link(destination: attribution.legalPageURL) {
+                                        HStack(spacing: 8) {
+                                            // Display the weather service logo
+                                            if let logoImage = combinedAttributionImage(
+                                                lightLogo: attribution.combinedMarkLightURL,
+                                                darkLogo: attribution.combinedMarkDarkURL
+                                            ) {
+                                                logoImage
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(height: 20)
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            Image(systemName: "arrow.up.right.square")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        .padding(.horizontal)
+                                        .padding(.vertical, 8)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                                .padding(.top, 8)
+                                .padding(.bottom, 20)
+                            }
                         }
                         .padding(.vertical)
                     }
@@ -480,8 +515,12 @@ struct WeatherView: View {
             let weatherService = WeatherService.shared
             let weather = try await weatherService.weather(for: location)
             
+            // Load weather attribution
+            let attribution = try await weatherService.attribution
+            
             await MainActor.run {
                 self.weather = weather
+                self.weatherAttribution = attribution
                 self.isLoading = false
             }
         } catch {
@@ -491,6 +530,21 @@ struct WeatherView: View {
             }
             print("Weather error: \(error)")
         }
+    }
+    
+    // Helper function to load and display the attribution logo based on color scheme
+    private func combinedAttributionImage(lightLogo: URL, darkLogo: URL) -> Image? {
+        @Environment(\.colorScheme) var colorScheme
+        
+        let logoURL = colorScheme == .dark ? darkLogo : lightLogo
+        
+        // Load the image from URL
+        guard let data = try? Data(contentsOf: logoURL),
+              let uiImage = UIImage(data: data) else {
+            return nil
+        }
+        
+        return Image(uiImage: uiImage)
     }
 }
 

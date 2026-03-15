@@ -177,7 +177,7 @@ struct CarShowsView: View {
                                // .foregroundStyle(.secondary)
                                // .padding(.vertical, 2)
                                 //.frame(maxWidth: .infinity, alignment: .center)
-                            Text("Contact Us from the Home Menu for adding your event or for corrections.")
+                            Text("Contact Us from the Menu for adding your event or for corrections.")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                                 .padding(.vertical, 2)

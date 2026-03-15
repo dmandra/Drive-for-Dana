@@ -10,22 +10,9 @@
 		163305AD2F4AC66C00F101CA /* Drive for Dana.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Drive for Dana.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		16644BD32F66239600F76DE3 /* Exceptions for "Drive for Dana" folder in "Drive for Dana" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Drive-for-Dana-Info.plist",
-			);
-			target = 163305AC2F4AC66C00F101CA /* Drive for Dana */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		163305AF2F4AC66C00F101CA /* Drive for Dana */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				16644BD32F66239600F76DE3 /* Exceptions for "Drive for Dana" folder in "Drive for Dana" target */,
-			);
 			path = "Drive for Dana";
 			sourceTree = "<group>";
 		};
@@ -268,7 +255,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Drive for Dana/Drive for Dana.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = 4CAHN9ARQZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -286,7 +273,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.6;
+				MARKETING_VERSION = 1.5.7;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.DriveForDana.Drive-for-Dana";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -310,7 +297,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Drive for Dana/Drive for Dana.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = 4CAHN9ARQZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -328,7 +315,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.6;
+				MARKETING_VERSION = 1.5.7;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.DriveForDana.Drive-for-Dana";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
