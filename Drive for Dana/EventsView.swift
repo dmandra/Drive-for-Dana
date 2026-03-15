@@ -230,7 +230,7 @@ struct EventCard: View {
         VStack(alignment: .leading, spacing: 8) {
             // Date
             if !event.date.isEmpty {
-                HStack(spacing: 4) {
+                HStack(alignment: .top, spacing: 4) {
                     Image(systemName: "calendar")
                         .font(.subheadline)
                     Text("\(event.date)")
@@ -238,6 +238,7 @@ struct EventCard: View {
                         .bold()
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
+                        //.background(Color.red.opacity(0.2))
                         .background(Color.red)
                         .foregroundColor(.white)
                         .cornerRadius(6)

@@ -17,82 +17,99 @@ struct CarShowSearchView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 16) {
-                // Date Picker
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Select Date")
-                        .font(.headline)
-                        .padding(.horizontal)
+            VStack(spacing: 0) {
+                // Fixed header section with date picker and search button
+                VStack(spacing: 16) {
+                    // Date Picker - Wheel style with day of week
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("Select Date")
+                                .font(.headline)
+                            Spacer()
+                            // Show selected day of week
+                            Text(searchDate.formatted(Date.FormatStyle().weekday(.wide)))
+                                .font(.subheadline)
+                                //.foregroundStyle(.secondary)
+                        }
+                        
+                        DatePicker(
+                            "Search Date",
+                            selection: $searchDate,
+                            displayedComponents: [.date]
+                        )
+                        .datePickerStyle(.wheel)
+                        .labelsHidden()
+                        .frame(height: 120)
+                        .clipped()
+                    }
+                    .padding(.horizontal)
                     
-                    DatePicker(
-                        "Search Date",
-                        selection: $searchDate,
-                        displayedComponents: [.date]
-                    )
-                    .datePickerStyle(.graphical)
+                    // Search Button
+                    Button(action: {
+                        performSearch()
+                    }) {
+                        HStack {
+                            if isSearching {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            } else {
+                                Image(systemName: "magnifyingglass")
+                            }
+                            Text("Search Car Shows")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.accentColor)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                    }
+                    .disabled(isSearching)
                     .padding(.horizontal)
                 }
+                .padding(.top)
+                .padding(.bottom, 8)
+                .background(Color(UIColor.systemBackground))
                 
-                // Search Button
-                Button(action: {
-                    performSearch()
-                }) {
-                    HStack {
-                        if isSearching {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        } else {
-                            Image(systemName: "magnifyingglass")
-                        }
-                        Text("Search Car Shows")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.accentColor)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
-                }
-                .disabled(isSearching)
-                .padding(.horizontal)
+                Divider()
                 
-                // Results
-                if hasSearched {
-                    if searchResults.isEmpty {
-                        VStack(spacing: 12) {
-                            Image(systemName: "calendar.badge.exclamationmark")
-                                .font(.system(size: 48))
-                                .foregroundStyle(.secondary)
-                            Text("No car shows found")
-                                .font(.headline)
-                            Text("Try searching for a different date")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        .frame(maxHeight: .infinity)
-                        .padding()
-                    } else {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("\(searchResults.count) car show\(searchResults.count == 1 ? "" : "s") found")
-                                .font(.headline)
-                                .padding(.horizontal)
-                            
-                            ScrollView {
-                                VStack(spacing: 4) {
-                                    ForEach(searchResults) { show in
-                                        CarShowCard(carShow: show)
-                                        Divider()
-                                    }
+                // Scrollable results section
+                ScrollView {
+                    VStack(spacing: 16) {
+                        if hasSearched {
+                            if searchResults.isEmpty {
+                                VStack(spacing: 12) {
+                                    Image(systemName: "calendar.badge.exclamationmark")
+                                        .font(.system(size: 48))
+                                        .foregroundStyle(.secondary)
+                                    Text("No car shows found")
+                                        .font(.headline)
+                                    Text("Try searching for a different date")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
                                 }
-                                .padding(.horizontal)
-                                .padding(.bottom)
+                                .padding()
+                                .padding(.top, 40)
+                            } else {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("\(searchResults.count) Car Show\(searchResults.count == 1 ? "" : "s") Found")
+                                        .font(.headline)
+                                        .padding(.horizontal)
+                                        .padding(.top, 8)
+                                    
+                                    VStack(spacing: 4) {
+                                        ForEach(searchResults) { show in
+                                            CarShowCard(carShow: show)
+                                            Divider()
+                                        }
+                                    }
+                                    .padding(.horizontal)
+                                }
                             }
                         }
                     }
-                } else {
-                    Spacer()
+                    .padding(.bottom)
                 }
             }
-            .padding(.top)
             .navigationTitle("Search Car Shows")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

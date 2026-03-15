@@ -37,6 +37,7 @@ struct ContentView: View {
         return currentDayNumber - 1
     }()
     @State private var showingManagement = false
+    @State private var showingSearch = false
     private let months: [String] = Calendar.current.monthSymbols
     private let daysOfWeek: [String] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -57,6 +58,7 @@ struct ContentView: View {
         case donate = "Donate"
         case gallery = "Gallery"
         case events = "Events"
+        case search = "Search"
         case contactUs = "Contact Us"
         case settings = "Settings"
         var id: String { rawValue }
@@ -67,7 +69,7 @@ struct ContentView: View {
                 return "HomeImage" // Home Page Image
             case .carShowInfo:
                 return "CarShowImage"
-            case .favorites, .carShowSponsors, .sponsors, .gallery, .carShow, .donate, .events, .contactUs, .settings:
+            case .favorites, .carShowSponsors, .sponsors, .gallery, .carShow, .donate, .events, .search, .contactUs, .settings:
                 return nil // Will use WebView, EventsView, FavoritesView, or text instead
             }
         }
@@ -93,8 +95,8 @@ struct ContentView: View {
         }
         
         var showInMenu: Bool {
-            // Don't show favorites, welcome, events, car show sponsors, registration, and donate in menu dropdown
-            self != .favorites && self != .welcome && self != .events && self != .carShowSponsors && self != .carShow && self != .donate && self != .carShowInfo && self != .sponsors
+            // Don't show favorites, welcome, events, car show sponsors, registration, donate, and search in menu dropdown
+            self != .favorites && self != .welcome && self != .events && self != .carShowSponsors && self != .carShow && self != .donate && self != .carShowInfo && self != .sponsors && self != .search
         }
     }
     
@@ -166,7 +168,7 @@ struct ContentView: View {
                     case .home:
                         // Home Tab with image selection menu
                         VStack(spacing: 0) {
-                            // Segmented-style control with Menu, Sponsors, and Favorites
+                            // Segmented-style control with Menu, Events, Search, and Favorites
                             HStack(spacing: 0) {
                                 // Menu dropdown (first segment)
                                 Menu {
@@ -220,6 +222,26 @@ struct ContentView: View {
                                         Image(systemName: "star.fill")
                                             .font(.system(size: 11))
                                         Text("Favorites")
+                                    }
+                                    .font(.system(size: 13))
+                                    .foregroundColor(.primary)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 4)
+                                    .background(Color(UIColor.secondarySystemFill), in: Capsule())
+                                }
+                                .frame(maxWidth: .infinity)
+                                
+                                // Gap between Favorites and Search
+                                Spacer().frame(width: 5)
+                                
+                                // Search segment
+                                Button(action: {
+                                    showingSearch = true
+                                }) {
+                                    HStack(spacing: 3) {
+                                        Image(systemName: "magnifyingglass")
+                                            .font(.system(size: 11))
+                                        Text("Search")
                                     }
                                     .font(.system(size: 13))
                                     .foregroundColor(.primary)
@@ -355,6 +377,9 @@ struct ContentView: View {
             }
             .background(Color(UIColor.systemGray6))
             .ignoresSafeArea(.container, edges: [.bottom])
+            .sheet(isPresented: $showingSearch) {
+                CarShowSearchView()
+            }
             .task {
                 // Ensure we start on Home tab on app launch
                 if selection != .home {
