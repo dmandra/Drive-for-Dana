@@ -28,7 +28,7 @@ struct CarShowSearchView: View {
                             Spacer()
                             // Show selected day of week
                             Text(searchDate.formatted(Date.FormatStyle().weekday(.wide)))
-                                .font(.subheadline)
+                                .font(.headline)
                                 //.foregroundStyle(.secondary)
                         }
                         

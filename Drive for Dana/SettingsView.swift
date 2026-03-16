@@ -44,7 +44,7 @@ struct SettingsView: View {
                     .font(.headline)
                     .padding(.bottom, 4)
                 
-                Text("The app stores car shows and cruise nights locally so you can view them offline. Data is automatically refreshed when online.")
+                Text("The app stores Car Shows and Cruise Nights locally so you can view them offline. Data is automatically refreshed when online.")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .padding(.bottom, 8)
@@ -72,7 +72,7 @@ struct SettingsView: View {
                         }
                     }
                 } message: {
-                    Text("This will remove all cached car shows and cruise nights. The app will need to fetch data from the internet again.")
+                    Text("This will remove all cached Car Shows and Cruise Nights. The app will need to fetch data from the internet again.")
                 }
                 
                 if cacheCleared {
@@ -101,7 +101,7 @@ struct SettingsView: View {
                         .font(.body)
                         .bold()
                     
-                    Text("Version 1.5.4")
+                    Text("Version 1.6.1")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
