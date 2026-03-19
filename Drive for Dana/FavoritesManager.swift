@@ -16,6 +16,7 @@ class FavoritesManager: ObservableObject {
     private let favoritesKey = "favoriteCarShows"
     
     private init() {
+        // Load favorites synchronously during initialization
         loadFavorites()
     }
     
@@ -45,7 +46,9 @@ class FavoritesManager: ObservableObject {
     
     func addFavorite(_ show: CarShow) {
         // Check if already favorited
-        guard !isFavorite(show) else { return }
+        guard !isFavorite(show) else { 
+            return 
+        }
         
         favoriteCarShows.append(show)
         saveFavorites()

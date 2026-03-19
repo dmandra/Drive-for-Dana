@@ -9,6 +9,7 @@ import SwiftUI
 import Combine
 import CoreLocation
 import WeatherKit
+import CryptoKit
 
 // MARK: - Cruise Night Model
 struct CruiseNight: Identifiable, Equatable, Codable {
@@ -22,7 +23,11 @@ struct CruiseNight: Identifiable, Equatable, Codable {
     let notes: String
     
     init(id: UUID = UUID(), rowOrder: Int, clubName: String, name: String, location: String, time: String, dates: String, notes: String) {
-        self.id = id
+        // Generate a deterministic UUID based on unique properties
+        // This ensures the same cruise night always has the same ID across app launches
+        let idString = "\(clubName)|\(name)|\(location)|\(dates)"
+        self.id = Self.generateDeterministicUUID(from: idString)
+        
         self.rowOrder = rowOrder
         self.clubName = clubName
         self.name = name
@@ -30,6 +35,25 @@ struct CruiseNight: Identifiable, Equatable, Codable {
         self.time = time
         self.dates = dates
         self.notes = notes
+    }
+    
+    // Generate a deterministic UUID from a string using SHA256
+    private static func generateDeterministicUUID(from string: String) -> UUID {
+        // Hash the string to get a deterministic result
+        let hash = SHA256.hash(data: Data(string.utf8))
+        
+        // Take first 16 bytes of the hash to create a UUID
+        let hashBytes = Array(hash.prefix(16))
+        
+        // Format as UUID string (8-4-4-4-12 format)
+        let uuidString = String(format: "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+                               hashBytes[0], hashBytes[1], hashBytes[2], hashBytes[3],
+                               hashBytes[4], hashBytes[5],
+                               hashBytes[6], hashBytes[7],
+                               hashBytes[8], hashBytes[9],
+                               hashBytes[10], hashBytes[11], hashBytes[12], hashBytes[13], hashBytes[14], hashBytes[15])
+        
+        return UUID(uuidString: uuidString) ?? UUID()
     }
 }
 
