@@ -38,8 +38,8 @@ struct SubmitShowView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("Event Information")) {
-                    DatePicker("Date", selection: Binding(
+                Section(header: Text("Event Information").foregroundColor(.black)) {
+                    DatePicker("Date (Required)", selection: Binding(
                         get: {
                             let formatter = DateFormatter()
                             formatter.dateFormat = "M/d/yyyy"
@@ -52,22 +52,22 @@ struct SubmitShowView: View {
                         }
                     ), displayedComponents: .date)
                     
-                    TextField("Club", text: $club)
-                    TextField("Name", text: $name)
-                    TextField("Time", text: $time)
+                    TextField("Club or Organization", text: $club)
+                    TextField("Show Name (Required)", text: $name)
+                    TextField("Time - Start/End", text: $time)
                         .textInputAutocapitalization(.never)
                 }
                 
-                Section(header: Text("Details")) {
+                Section(header: Text("Details").foregroundColor(.black)) {
                     TextField("Description", text: $description, axis: .vertical)
                         .lineLimit(3...6)
                     
-                    TextField("Location", text: $location)
+                    TextField("Location Name", text: $location)
                     TextField("Address", text: $address)
                         .textInputAutocapitalization(.words)
                 }
                 
-                Section(header: Text("Fees")) {
+                Section(header: Text("Fees").foregroundColor(.black)) {
                     TextField("Car Fee", text: $carFee)
                         .textInputAutocapitalization(.never)
                     TextField("Spectator Fee", text: $spectatorFee)
@@ -76,16 +76,16 @@ struct SubmitShowView: View {
                         .textInputAutocapitalization(.never)
                 }
                 
-                Section(header: Text("Additional Information")) {
-                    TextField("Vendors", text: $vendors)
+                Section(header: Text("Additional Information").foregroundColor(.black)) {
+                    TextField("Vendors - yes/no", text: $vendors)
                     TextField("Rain Date", text: $rainDate)
                         .textInputAutocapitalization(.never)
                     TextField("Notes", text: $notes, axis: .vertical)
                         .lineLimit(2...4)
                 }
                 
-                Section(header: Text("Contact Information")) {
-                    TextField("Contact Name", text: $contact)
+                Section(header: Text("Contact Information").foregroundColor(.black)) {
+                    TextField("Phone", text: $contact)
                     TextField("Email", text: $email)
                         .textInputAutocapitalization(.never)
                         .keyboardType(.emailAddress)
@@ -99,11 +99,16 @@ struct SubmitShowView: View {
                         HStack {
                             Spacer()
                             Text("Submit Car Show")
-                                .bold()
+                                //.bold()
+                                .foregroundColor(.black)
                             Spacer()
                         }
+                        .padding(.vertical, 8)
+                        .background(Color.blue.opacity(0.15))
+                        .cornerRadius(8)
                     }
                     .disabled(name.isEmpty || date.isEmpty)
+                    .listRowBackground(Color.clear)
                 }
             }
             .navigationTitle("Submit Your Show")
@@ -117,8 +122,9 @@ struct SubmitShowView: View {
             }
             .sheet(isPresented: $showingMailView) {
                 MailView(
-                    subject: "Car Show Submission",
-                    recipients: ["drivefordana@hotmail.com"],
+                    subject: "Car Show Submission from app",
+                    recipients: ["dmandradfd@hotmail.com", "drivefordana@hotmail.com"],
+                    //recipients: ["drivefordana@hotmail.com"],
                     body: generateEmailBody(),
                     onDismiss: { result in
                         handleMailResult(result)
@@ -164,7 +170,7 @@ struct SubmitShowView: View {
         body += "CAR FEE: \(carFee)\n"
         body += "SPECTATOR FEE: \(spectatorFee)\n"
         body += "NOTES: \(notes)\n"
-        body += "CONTACT: \(contact)\n"
+        body += "PHONE: \(contact)\n"
         body += "EMAIL: \(email)\n"
         body += "WEBSITE: \(website)\n"
         body += "RAIN DATE: \(rainDate)\n"

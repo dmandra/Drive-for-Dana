@@ -18,57 +18,38 @@ struct CarShowSearchView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Fixed header section with date picker and search button
-                VStack(spacing: 16) {
-                    // Date Picker - Wheel style with day of week
-                    VStack(alignment: .leading, spacing: 8) {
+                // Fixed header section with date picker and search button inline
+                Form {
+                    Section {
                         HStack {
-                            Text("Select Date")
-                                .font(.headline)
-                            Spacer()
-                            // Show selected day of week
-                            Text(searchDate.formatted(Date.FormatStyle().weekday(.wide)))
-                                .font(.headline)
-                                //.foregroundStyle(.secondary)
-                        }
-                        
-                        DatePicker(
-                            "Search Date",
-                            selection: $searchDate,
-                            displayedComponents: [.date]
-                        )
-                        .datePickerStyle(.wheel)
-                        .labelsHidden()
-                        .frame(height: 120)
-                        .clipped()
-                    }
-                    .padding(.horizontal)
-                    
-                    // Search Button
-                    Button(action: {
-                        performSearch()
-                    }) {
-                        HStack {
-                            if isSearching {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            } else {
-                                Image(systemName: "magnifyingglass")
+                            DatePicker(
+                                "Select Date",
+                                selection: $searchDate,
+                                displayedComponents: [.date]
+                            )
+                            
+                            Button(action: {
+                                performSearch()
+                            }) {
+                                if isSearching {
+                                    ProgressView()
+                                        .frame(width: 30, height: 30)
+                                } else {
+                                    Image(systemName: "magnifyingglass")
+                                        .font(.system(size: 20))
+                                        .foregroundColor(.white)
+                                        .frame(width: 40, height: 40)
+                                        .background(Color.accentColor)
+                                        .clipShape(Circle())
+                                }
                             }
-                            Text("Search Car Shows")
+                            .disabled(isSearching)
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.accentColor)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
                     }
-                    .disabled(isSearching)
-                    .padding(.horizontal)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                 }
-                .padding(.top)
-                .padding(.bottom, 8)
-                .background(Color(UIColor.systemBackground))
+                .frame(height: 100)
+                .scrollDisabled(true)
                 
                 Divider()
                 

@@ -38,6 +38,7 @@ struct ContentView: View {
     }()
     @State private var showingManagement = false
     @State private var showingSearch = false
+    @State private var showingSubmitShow = false
     private let months: [String] = Calendar.current.monthSymbols
     private let daysOfWeek: [String] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -50,13 +51,14 @@ struct ContentView: View {
     
     private enum HomeImageOption: String, CaseIterable, Identifiable {
         case welcome = "Welcome" // Not shown in menu, only on app launch and Home being selected
+        case submitShow = "Submit Your Show"
         case favorites = "Car Show Favorites"
         case carShowInfo = "DFD Car Show Registration"
         case carShow = "Registration"
         case sponsors = "Sponsors"
         case carShowSponsors = "Car Show Sponsors"
         case donate = "Donate"
-        case gallery = "Gallery"
+        case gallery = "Event Gallery"
         case events = "Events"
         case search = "Search"
         case contactUs = "Contact Us"
@@ -69,7 +71,7 @@ struct ContentView: View {
                 return "HomeImage" // Home Page Image
             case .carShowInfo:
                 return "CarShowImage"
-            case .favorites, .carShowSponsors, .sponsors, .gallery, .carShow, .donate, .events, .search, .contactUs, .settings:
+            case .favorites, .carShowSponsors, .sponsors, .gallery, .carShow, .donate, .events, .search, .submitShow, .contactUs, .settings:
                 return nil // Will use WebView, EventsView, FavoritesView, or text instead
             }
         }
@@ -315,6 +317,16 @@ struct ContentView: View {
                                 ContactUsView()
                                     .padding(.top, 5)
                                     .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
+                            } else if homeImageSelection == .submitShow {
+                                // Show SubmitShowView sheet for Submit Your Show option
+                                Color.clear
+                                    .onAppear {
+                                        showingSubmitShow = true
+                                        // Reset to welcome after triggering the sheet
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                            homeImageSelection = .welcome
+                                        }
+                                    }
                             } else if homeImageSelection == .settings {
                                 // Show SettingsView for Settings option
                                 SettingsView()
@@ -379,6 +391,9 @@ struct ContentView: View {
             .ignoresSafeArea(.container, edges: [.bottom])
             .sheet(isPresented: $showingSearch) {
                 CarShowSearchView()
+            }
+            .sheet(isPresented: $showingSubmitShow) {
+                SubmitShowView()
             }
             .task {
                 // Ensure we start on Home tab on app launch
