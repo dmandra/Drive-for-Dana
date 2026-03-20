@@ -86,6 +86,32 @@ struct CarShowSearchView: View {
                                     .padding(.horizontal)
                                 }
                             }
+                        } else {
+                            // Initial state instructions
+                            VStack(spacing: 16) {
+                                Image(systemName: "calendar.badge.clock")
+                                    .font(.system(size: 48))
+                                    .foregroundStyle(.secondary)
+                                
+                                VStack(spacing: 8) {
+                                    Text("Search for Car Shows by Date")
+                                        .font(.headline)
+                                    
+                                    Text("Select a date above and tap the search button to find car shows scheduled for that day.")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                        .multilineTextAlignment(.center)
+                                    
+                                    //Text("Most car shows are on Saturday and Sunday")
+                                        //.font(.caption)
+                                        //.foregroundStyle(.secondary)
+                                        //.italic()
+                                        //.padding(.top, 4)
+                                }
+                                .padding(.horizontal, 32)
+                            }
+                            .padding()
+                            .padding(.top, 40)
                         }
                     }
                     .padding(.bottom)
