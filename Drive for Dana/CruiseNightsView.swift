@@ -125,7 +125,7 @@ struct CruiseNightsView: View {
                         }
                         
                         // Footer below cruise nights
-                        Text("Check back regularly for updates. Cruise Night schedules may change.")
+                        Text("Check back regularly for updates. Cruise Night schedules may change. Submit additions or corrections from the Menu")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .padding(.vertical, 8)

@@ -201,6 +201,7 @@ struct FavoriteCarShowCard: View {
                         Text(carShow.email)
                             .font(.subheadline)
                             .lineLimit(1)
+                        Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .font(.subheadline)
                     }
@@ -217,6 +218,7 @@ struct FavoriteCarShowCard: View {
                         Text(carShow.website)
                             .font(.subheadline)
                             .lineLimit(1)
+                        Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .font(.subheadline)
                     }

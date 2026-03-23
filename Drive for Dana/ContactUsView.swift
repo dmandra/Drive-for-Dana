@@ -20,13 +20,16 @@ struct ContactUsView: View {
                     .padding(.bottom, 4)
                 
                 // Information items
-                Text("Become A Sponsor")
+                Text("Become a Sponsor")
                     .font(.body)
                 
-                Text("Add Your Car Show OR Make a Correction")
+                Text("Make a Correction to an Event")
                     .font(.body)
                 
-                Text("Add Your Cruise Night/Cars & Coffee")
+                Text("Add a Cruise Night/Cars & Coffee")
+                    .font(.body)
+                
+                Text("Report App Issues")
                     .font(.body)
                 
                 Divider()
@@ -104,11 +107,11 @@ struct ContactUsView: View {
                     .font(.body)
                 
                 // Developer email link
-                Link(destination: URL(string: "mailto:dmandraDfD@hotmail.com")!) {
+                Link(destination: URL(string: "DFDcarshows@gmail.com")!) {
                     HStack(spacing: 4) {
                         Image(systemName: "envelope.fill")
                             .font(.subheadline)
-                        Text("Email: dmandraDfD@hotmail.com")
+                        Text("Email: DFDcarshows@gmail.com")
                             .font(.body)
                         Spacer()
                         Image(systemName: "arrow.up.right.square")
@@ -124,6 +127,7 @@ struct ContactUsView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.horizontal)
+        
     }
 }
 

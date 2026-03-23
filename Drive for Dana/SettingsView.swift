@@ -92,23 +92,23 @@ struct SettingsView: View {
                     .padding(.vertical, 8)
                 
                 // About
-                Text("ABOUT")
-                    .font(.headline)
-                    .padding(.bottom, 4)
+                //Text("ABOUT")
+                    //.font(.headline)
+                    //.padding(.bottom, 4)
                 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Drive for Dana")
-                        .font(.body)
-                        .bold()
+                //VStack(alignment: .leading, spacing: 8) {
+                    //Text("Drive for Dana")
+                        //.font(.body)
+                        //.bold()
                     
-                    Text("Version 1.6.1")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                    //Text("Version 1.6.3")
+                        //.font(.subheadline)
+                        //.foregroundColor(.secondary)
                     
-                    Text("Car Shows and Cruise Nights / Cars & Coffee Information for Long Island")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
+                    //Text("Car Shows and Cruise Nights / Cars & Coffee Information for Long Island")
+                       // .font(.subheadline)
+                        //.foregroundColor(.secondary)
+               // }
                 
                 Spacer()
             }

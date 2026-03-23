@@ -123,7 +123,7 @@ struct SubmitShowView: View {
             .sheet(isPresented: $showingMailView) {
                 MailView(
                     subject: "Car Show Submission from app",
-                    recipients: ["dmandradfd@hotmail.com", "drivefordana@hotmail.com"],
+                    recipients: ["DFDcarshows@gmail.com", "drivefordana@hotmail.com"],
                     //recipients: ["drivefordana@hotmail.com"],
                     body: generateEmailBody(),
                     onDismiss: { result in
@@ -137,7 +137,7 @@ struct SubmitShowView: View {
                     dismiss()
                 }
             } message: {
-                Text("Your car show submission has been sent successfully!")
+                Text("Your Car Show submission has been sent successfully and will be reviewed by our team. Thank you!")
             }
             .alert("Error", isPresented: $showingError) {
                 Button("OK", role: .cancel) { }

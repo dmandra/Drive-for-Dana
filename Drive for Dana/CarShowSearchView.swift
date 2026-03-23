@@ -21,12 +21,16 @@ struct CarShowSearchView: View {
                 // Fixed header section with date picker and search button inline
                 Form {
                     Section {
-                        HStack {
+                        //add space between date and search button
+                        HStack(spacing: 18) {
                             DatePicker(
-                                "Select Date",
+                                "",
                                 selection: $searchDate,
                                 displayedComponents: [.date]
                             )
+                            .labelsHidden()
+                            
+                            Spacer()
                             
                             Button(action: {
                                 performSearch()
@@ -38,17 +42,22 @@ struct CarShowSearchView: View {
                                     Image(systemName: "magnifyingglass")
                                         .font(.system(size: 20))
                                         .foregroundColor(.white)
-                                        .frame(width: 40, height: 40)
+                                        .frame(width: 80, height: 40)
                                         .background(Color.accentColor)
-                                        .clipShape(Circle())
+                                        .clipShape(RoundedRectangle(cornerRadius: 20))
                                 }
                             }
                             .disabled(isSearching)
                         }
                     }
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Color.blue.opacity(0.1))
+                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                 }
-                .frame(height: 100)
+                //added two lines to test
+                .minimumScaleFactor(0.5)
+                .frame(height: 80)
+                //original
+                //.frame(height: 100)
                 .scrollDisabled(true)
                 
                 Divider()
@@ -117,6 +126,9 @@ struct CarShowSearchView: View {
                     .padding(.bottom)
                 }
             }
+            //added next line to reduce spacing below title and date picker
+            .contentMargins(.top, 10)
+            //original
             .navigationTitle("Search Car Shows")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

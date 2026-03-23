@@ -56,7 +56,6 @@ struct ContentView: View {
         case carShowInfo = "DFD Car Show Registration"
         case carShow = "Registration"
         case sponsors = "Sponsors"
-        case carShowSponsors = "Car Show Sponsors"
         case donate = "Donate"
         case gallery = "Event Gallery"
         case events = "Events"
@@ -71,7 +70,7 @@ struct ContentView: View {
                 return "HomeImage" // Home Page Image
             case .carShowInfo:
                 return "CarShowImage"
-            case .favorites, .carShowSponsors, .sponsors, .gallery, .carShow, .donate, .events, .search, .submitShow, .contactUs, .settings:
+            case .favorites, .sponsors, .gallery, .carShow, .donate, .events, .search, .submitShow, .contactUs, .settings:
                 return nil // Will use WebView, EventsView, FavoritesView, or text instead
             }
         }
@@ -97,8 +96,8 @@ struct ContentView: View {
         }
         
         var showInMenu: Bool {
-            // Don't show favorites, welcome, events, car show sponsors, registration, donate, and search in menu dropdown
-            self != .favorites && self != .welcome && self != .events && self != .carShowSponsors && self != .carShow && self != .donate && self != .carShowInfo && self != .sponsors && self != .search
+            // Don't show favorites, welcome, events, registration, donate, and search in menu dropdown
+            self != .favorites && self != .welcome && self != .events && self != .carShow && self != .donate && self != .carShowInfo && self != .sponsors && self != .search
         }
     }
     
@@ -283,11 +282,6 @@ struct ContentView: View {
                             } else if homeImageSelection == .sponsors {
                                 // Show SponsorsView for Official Sponsors
                                 SponsorsView()
-                                    .padding(.top, 5)
-                                    .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
-                            } else if homeImageSelection == .carShowSponsors {
-                                // Show CarShowSponsorsView for Car Show Sponsors
-                                CarShowSponsorsView()
                                     .padding(.top, 5)
                                     .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
                             } else if let galleryURL = homeImageSelection.galleryURL {
