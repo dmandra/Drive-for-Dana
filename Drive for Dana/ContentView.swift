@@ -28,7 +28,7 @@ struct WebView: UIViewRepresentable {
 
 struct ContentView: View {
     @State private var selection: Selection = .home  // Always start on Home
-    @State private var linkSelection: LinkAction? = nil
+    //@State private var linkSelection: LinkAction? = nil
     @State private var homeImageSelection: HomeImageOption = .welcome
     @State private var monthIndex: Int = Calendar.current.component(.month, from: Date()) - 1
     @State private var dayOfWeekIndex: Int = {
@@ -52,14 +52,16 @@ struct ContentView: View {
     private enum HomeImageOption: String, CaseIterable, Identifiable {
         case welcome = "Welcome" // Not shown in menu, only on app launch and Home being selected
         case submitShow = "Submit Your Show"
+        case registerShow = "Online Show Registration"
         case favorites = "Car Show Favorites"
-        case carShowInfo = "DFD Car Show Registration"
-        case carShow = "Registration"
-        case sponsors = "Sponsors"
-        case donate = "Donate"
+        //case carShowInfo = "DFD Car Show Registration"
+        //case carShow = "Registration"
+        //case sponsors = "Sponsors"
+        //case donate = "Donate"
         case gallery = "Event Gallery"
         case events = "Events"
         case search = "Search"
+        case ourStory = "Our Story"
         case contactUs = "Contact Us"
         case settings = "Settings"
         var id: String { rawValue }
@@ -68,10 +70,11 @@ struct ContentView: View {
             switch self {
             case .welcome:
                 return "HomeImage" // Home Page Image
-            case .carShowInfo:
-                return "CarShowImage"
-            case .favorites, .sponsors, .gallery, .carShow, .donate, .events, .search, .submitShow, .contactUs, .settings:
-                return nil // Will use WebView, EventsView, FavoritesView, or text instead
+            //case .carShowInfo:
+                //return "CarShowImage"
+            //case .favorites, .sponsors, .registerShow, .gallery, .ourStory, .carShow, .donate, .events, .search, .submitShow, .contactUs, .settings:
+            case  .submitShow, .registerShow, .gallery, .ourStory, .contactUs, .settings, .events, .favorites, .search:
+                return nil // Will use WebView, EventsView, FavoritesView
             }
         }
         
@@ -84,40 +87,41 @@ struct ContentView: View {
             }
         }
         
-        var webURL: String? {
-            switch self {
-            case .carShow:
-                return "https://www.zeffy.com/en-US/ticketing/drive-for-dana-car-and-truck-show--2026"
-            case .donate:
-                return "https://www.zeffy.com/en-US/donation-form/78541d04-41af-47eb-ba42-033f70c53097"
-            default:
-                return nil
-            }
-        }
+        //var webURL: String? {
+            //switch self {
+            //case .carShow:
+                //return "https://www.zeffy.com/en-US/ticketing/drive-for-dana-car-and-truck-show--2026"
+            //case .donate:
+                //return "https://www.zeffy.com/en-US/donation-form/78541d04-41af-47eb-ba42-033f70c53097"
+            //default:
+                //return nil
+            //}
+        //}
         
         var showInMenu: Bool {
-            // Don't show favorites, welcome, events, registration, donate, and search in menu dropdown
-            self != .favorites && self != .welcome && self != .events && self != .carShow && self != .donate && self != .carShowInfo && self != .sponsors && self != .search
+            // Don't show in menu dropdown
+            //self != .favorites && self != .welcome && self != .events && self != .carShow && self != .donate && self != .carShowInfo && self != .sponsors && self != .search
+            self != .welcome && self != .events && self != .favorites && self != .search
         }
     }
     
-    private enum LinkAction: String, CaseIterable, Identifiable {
-        case menu = "Menu"
-        case donate = "Donate"
-        case registration = "Car Show"
-        var id: String { rawValue }
+    //private enum LinkAction: String, CaseIterable, Identifiable {
+        //case menu = "Menu"
+        //case donate = "Donate"
+        //case registration = "Car Show"
+        //var id: String { rawValue }
         
-        var url: URL? {
-            switch self {
-            case .menu:
-                return nil // Menu is handled separately
-            case .donate:
-                return URL(string: "https://www.zeffy.com/en-US/donation-form/78541d04-41af-47eb-ba42-033f70c53097")
-            case .registration:
-                return URL(string: "https://www.zeffy.com/en-US/ticketing/drive-for-dana-car-and-truck-show--2026")
-            }
-        }
-    }
+        //var url: URL? {
+            //switch self {
+            //case .menu:
+                //return nil // Menu is handled separately
+            //case .donate:
+                //return URL(string: "https://www.zeffy.com/en-US/donation-form/78541d04-41af-47eb-ba42-033f70c53097")
+            //case .registration:
+                //return URL(string: "https://www.zeffy.com/en-US/ticketing/drive-for-dana-car-and-truck-show--2026")
+            //}
+        //}
+    //}
 
     var body: some View {
         NavigationStack {
@@ -134,6 +138,9 @@ struct ContentView: View {
                     Text("Long Island Car Shows and Cruise Nights/Cars & Coffee")
                         .font(.footnote)
                         .multilineTextAlignment(.center)
+                    // scales text labels from wrapping on display zoom. change to 0.6 if text is too small
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
                 }
                 .padding(.top, 5)
                 .padding(.bottom, 8)
@@ -154,6 +161,9 @@ struct ContentView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 4)
                                 .background(selection == option ? Color.accentColor : Color.clear)
+                            // scales text labels from wrapping on display zoom. change to 0.6 if text is too small
+                                .minimumScaleFactor(0.5)
+                                .lineLimit(1)
                         }
                         .buttonStyle(.plain)
                     }
@@ -259,43 +269,32 @@ struct ContentView: View {
                             
                             // Content under the menu - changes based on homeImageSelection
                             if let imageName = homeImageSelection.imageName {
-                                // Show image for non-webview options
-                                if homeImageSelection == .carShowInfo {
-                                    // Make CarShowImage clickable to load registration
-                                    Button(action: {
-                                        homeImageSelection = .carShow
-                                    }) {
-                                        Image(imageName)
-                                            .resizable()
-                                            //.padding(.horizontal)
-                                            .padding(.top, 5)
-                                    }
-                                    .buttonStyle(.plain)
-                                    .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
-                                } else {
-                                    Image(imageName)
-                                        .resizable()
-                                        //.padding(.horizontal)
-                                        .padding(.top, 5)
-                                        .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
-                                }
-                            } else if homeImageSelection == .sponsors {
-                                // Show SponsorsView for Official Sponsors
-                                SponsorsView()
+                                // Show Home Image
+                                Image(imageName)
+                                    .resizable()
+                                    //.scaledToFit()
+                                    //.padding(.horizontal)
                                     .padding(.top, 5)
                                     .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
-                            } else if let galleryURL = homeImageSelection.galleryURL {
+                            }
+                            //else if homeImageSelection == .sponsors {
+                                // Show SponsorsView for Official Sponsors
+                                //SponsorsView()
+                                    //.padding(.top, 5)
+                                    //.animation(.easeInOut(duration: 0.3), value: homeImageSelection)
+                            //}
+                        else if let galleryURL = homeImageSelection.galleryURL {
                                 // Show WebView for Gallery images from URL
                                 WebView(urlString: galleryURL)
                                     .padding(.horizontal)
                                     .padding(.top, 5)
                                     .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
-                            } else if let webURL = homeImageSelection.webURL {
+                            //} else if let webURL = homeImageSelection.webURL {
                                 // Show WebView for Car Show and Donate options
-                                WebView(urlString: webURL)
-                                    .padding(.horizontal)
-                                    .padding(.top, 5)
-                                    .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
+                                //WebView(urlString: webURL)
+                                    //.padding(.horizontal)
+                                    //.padding(.top, 5)
+                                    //.animation(.easeInOut(duration: 0.3), value: homeImageSelection)
                             } else if homeImageSelection == .favorites {
                                 // Show FavoritesView for Favorites option
                                 FavoritesView()
@@ -324,6 +323,16 @@ struct ContentView: View {
                             } else if homeImageSelection == .settings {
                                 // Show SettingsView for Settings option
                                 SettingsView()
+                                    .padding(.top, 5)
+                                    .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
+                            } else if homeImageSelection == .registerShow {
+                                // Show RegistrationView for Online Registration option
+                                RegistrationView()
+                                    .padding(.top, 5)
+                                    .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
+                            } else if homeImageSelection == .ourStory {
+                                // Show OurStoryView for Our Story option
+                                OurStoryView()
                                     .padding(.top, 5)
                                     .animation(.easeInOut(duration: 0.3), value: homeImageSelection)
                             }

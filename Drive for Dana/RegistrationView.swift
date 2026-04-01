@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 // MARK: - Event Model
-struct Event: Identifiable, Equatable {
+struct Registration: Identifiable, Equatable {
     let id = UUID()
     let rowOrder: Int  // Track original spreadsheet order
     let name: String
@@ -24,7 +24,7 @@ struct Event: Identifiable, Equatable {
 }
 
 // MARK: - Events View
-struct EventsView: View {
+struct RegistrationView: View {
     @State private var events: [Event] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
@@ -62,9 +62,9 @@ struct EventsView: View {
                     Image(systemName: "calendar.badge.clock")
                         .font(.system(size: 48))
                         .foregroundStyle(.secondary)
-                    Text("No events scheduled")
+                    Text("No Online Registration Available")
                         .font(.headline)
-                    Text("Check back later for updates")
+                    Text("Check back later")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -75,7 +75,7 @@ struct EventsView: View {
                     VStack(spacing: 4) {
                         // Header text
                         VStack(spacing: 8) {
-                            Text("UPCOMING EVENTS")
+                            Text("Online Registration")
                                 .font(.title2)
                                 .fontWeight(.bold)
                             //Divider()
@@ -97,8 +97,8 @@ struct EventsView: View {
                         
                         // Footer text
                         VStack(spacing: 8) {
-                            Text("📅 MORE EVENTS COMING SOON")
-                                .font(.headline)
+                            //Text("📅 MORE EVENTS COMING SOON")
+                                //.font(.headline)
                             
                             //Text("Stay tuned for additional fundraising events throughout the year. Follow us on social //media for the latest updates!")
                                 //.font(.caption)
@@ -123,7 +123,7 @@ struct EventsView: View {
         errorMessage = nil
         
         // Spreadsheet ID from your URL
-        let spreadsheetId = "19JcRZApNCTLAlu3rz-6QEbI8UqUO4uR4HnHhhhpVjso"
+        let spreadsheetId = "1__CFpNsF6-c3mfP8b5bojNPtZ1ciijBQgln3UIq53mg"
         
         // Since there's only one sheet, we can use gid=0 or get the specific gid from the URL
         let gid = "0"  // Update this if needed by checking the URL when you open the sheet
@@ -223,7 +223,7 @@ struct EventsView: View {
 }
 
 // MARK: - Event Card Component
-struct EventCard: View {
+struct RegistrationCard: View {
     let event: Event
     
     var body: some View {
@@ -419,10 +419,6 @@ struct EventCard: View {
 }
 
 // MARK: - Previews
-#Preview("Events View") {
-    EventsView()
-}
-
-#Preview("Full App - ContentView") {
-    ContentView()
+#Preview("Registration View") {
+    RegistrationView()
 }
