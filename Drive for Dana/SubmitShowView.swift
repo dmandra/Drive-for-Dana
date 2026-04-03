@@ -54,16 +54,16 @@ struct SubmitShowView: View {
                     
                     TextField("Club or Organization", text: $club)
                     TextField("Show Name (Required)", text: $name)
-                    TextField("Time - Start/End", text: $time)
+                    TextField("Time - Start/End (Required)", text: $time)
                         .textInputAutocapitalization(.never)
                 }
                 
                 Section(header: Text("Details").foregroundColor(.black)) {
-                    TextField("Description", text: $description, axis: .vertical)
+                    TextField("Description (Required)", text: $description, axis: .vertical)
                         .lineLimit(3...6)
                     
-                    TextField("Location Name", text: $location)
-                    TextField("Address", text: $address)
+                    TextField("Location Name (Required)", text: $location)
+                    TextField("Full Address (Required)", text: $address)
                         .textInputAutocapitalization(.words)
                 }
                 

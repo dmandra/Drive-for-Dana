@@ -1,5 +1,5 @@
 //
-//  EventsView.swift
+//  RegistrationView.swift
 //  Drive for Dana
 //
 //  Created by Donald Mandra on 2/25/26.

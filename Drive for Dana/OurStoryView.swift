@@ -32,6 +32,24 @@ struct OurStoryView: View {
                 //Text("Report App Issues")
                     //.font(.body)
                 
+                //Divider()
+                    //.padding(.vertical, 4)
+                
+                // Zeffy link
+                Link(destination: URL(string: "https://www.zeffy.com/en-US/donation-form/78541d04-41af-47eb-ba42-033f70c53097")!) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "giftcard.fill")
+                            .font(.subheadline)
+                        Text("Please Donate")
+                            .font(.body)
+                        Spacer()
+                        Image(systemName: "arrow.up.right.square")
+                            .font(.subheadline)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .foregroundColor(.blue)
+                
                 Divider()
                     .padding(.vertical, 4)
                 
@@ -40,78 +58,44 @@ struct OurStoryView: View {
                     .font(.headline)
                     .bold()
                     .padding(.bottom, 2)
-                
-                Text("Nicholas Ferraioli")
+                Text("Drive For Dana is a 501c3 charity that helps medically fragile children. We started our journey shortly after Dana suffered a traumatic brain injury from a near fatal drowning accident in 2018.")
                     .font(.body)
-                
-                // Phone number link
-                Button(action: {
-                    if let url = URL(string: "tel://6315536975") {
-                        UIApplication.shared.open(url)
-                    }
-                }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "phone.fill")
-                            .font(.subheadline)
-                        Text("Phone: (631) 553-6975")
-                            .font(.body)
-                        Spacer()
-                        Image(systemName: "arrow.up.right.square")
-                            .font(.subheadline)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .buttonStyle(.plain)
-                .foregroundColor(.blue)
-                
-                // Email link
-                Link(destination: URL(string: "mailto:drivefordana@hotmail.com")!) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "envelope.fill")
-                            .font(.subheadline)
-                        Text("Email: drivefordana@hotmail.com")
-                            .font(.body)
-                        Spacer()
-                        Image(systemName: "arrow.up.right.square")
-                            .font(.subheadline)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .foregroundColor(.blue)
-                
-                // Website link
-                Link(destination: URL(string: "https://www.zeffy.com/en-US/donation-form/78541d04-41af-47eb-ba42-033f70c53097")!) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "link")
-                            .font(.subheadline)
-                        Text("Donate")
-                            .font(.body)
-                        Spacer()
-                        Image(systemName: "arrow.up.right.square")
-                            .font(.subheadline)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .foregroundColor(.blue)
+                Text("We started with a very small car show and have grown to a weekly cars and coffee as well as one of the largest car shows on Long Island and a Winter Breakfast for the whole family.")
+                    .font(.body)
+                Text("The Drive For Dana Team prides itself on being 100% volunteer with every dollar donated at events going back out to children.")
+                    .font(.body)
+                Text("The Drive For Dana Foundation is dedicated to continuing Dana’s legacy of bringing awareness to the medically fragile community on Long Island.")
+                    .font(.body)
                 
                 Divider()
                     .padding(.vertical, 4)
                 
-                // App Developer section
-                //Text("App Developer")
-                    //.font(.headline)
-                    //.bold()
-                    //.padding(.bottom, 2)
+                // Phone number link
+                //Button(action: {
+                    //if let url = URL(string: "tel://6315536975") {
+                        //UIApplication.shared.open(url)
+                    //}
+                //}) {
+                    //HStack(spacing: 4) {
+                        //Image(systemName: "phone.fill")
+                            //.font(.subheadline)
+                        //Text("Phone: (631) 553-6975")
+                            //.font(.body)
+                        //Spacer()
+                        //Image(systemName: "arrow.up.right.square")
+                            //.font(.subheadline)
+                    //}
+                    //.frame(maxWidth: .infinity, alignment: .leading)
+                //}
+                //.buttonStyle(.plain)
+                //.foregroundColor(.blue)
                 
-                //Text("Donald Mandra")
-                    //.font(.body)
-                
-                // Developer email link
-                //Link(destination: URL(string: "DFDcarshows@gmail.com")!) {
+                // Email link
+                //Link(destination: URL(string: "mailto:drivefordana@hotmail.com")!) {
                     //HStack(spacing: 4) {
                         //Image(systemName: "envelope.fill")
                             //.font(.subheadline)
-                        //Text("Email: DFDcarshows@gmail.com")
+                        //Text("Email: drivefordana@hotmail.com")
                             //.font(.body)
                         //Spacer()
                         //Image(systemName: "arrow.up.right.square")
@@ -120,8 +104,6 @@ struct OurStoryView: View {
                     //.frame(maxWidth: .infinity, alignment: .leading)
                 //}
                 //.foregroundColor(.blue)
-                
-                //Spacer()
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)

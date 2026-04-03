@@ -74,7 +74,7 @@ struct ContentView: View {
                 //return "CarShowImage"
             //case .favorites, .sponsors, .registerShow, .gallery, .ourStory, .carShow, .donate, .events, .search, .submitShow, .contactUs, .settings:
             case  .submitShow, .registerShow, .gallery, .ourStory, .contactUs, .settings, .events, .favorites, .search:
-                return nil // Will use WebView, EventsView, FavoritesView
+                return nil
             }
         }
         
@@ -101,7 +101,7 @@ struct ContentView: View {
         var showInMenu: Bool {
             // Don't show in menu dropdown
             //self != .favorites && self != .welcome && self != .events && self != .carShow && self != .donate && self != .carShowInfo && self != .sponsors && self != .search
-            self != .welcome && self != .events && self != .favorites && self != .search
+            self != .welcome && self != .events && self != .favorites && self != .search && self != .registerShow
         }
     }
     
