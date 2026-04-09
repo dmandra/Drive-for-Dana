@@ -115,6 +115,11 @@ class DataManager: ObservableObject {
         
         print("📥 Preloading all car shows (12 months)...")
         
+        // NEW - Load Car Shows sequentially instead of all at once
+        //for monthIndex in 0..<12 {
+            //await preloadCarShows(for: monthIndex)
+        //}
+        
         // Preload all car shows (12 months)
         await withTaskGroup(of: Void.self) { group in
             for monthIndex in 0..<12 {
@@ -125,6 +130,11 @@ class DataManager: ObservableObject {
         }
         
         print("📥 Preloading all cruise nights (7 days)...")
+        
+        // NEW - Load Cruise Nights sequentially instead of all at once
+            //for dayIndex in 0..<7 {
+                    //await preloadCruiseNights(for: dayIndex)
+                //}
         
         // Preload all cruise nights (7 days)
         await withTaskGroup(of: Void.self) { group in

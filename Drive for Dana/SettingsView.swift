@@ -19,7 +19,7 @@ struct SettingsView: View {
                 Text("SETTINGS")
                     .font(.title2)
                     .bold()
-                    .frame(maxWidth: .infinity, alignment: .center)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.bottom, 8)
                 
                 // Network Status

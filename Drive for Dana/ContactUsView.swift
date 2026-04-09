@@ -13,8 +13,7 @@ struct ContactUsView: View {
             VStack(alignment: .leading, spacing: 8) {
                 // Header
                 Text("CONTACT US")
-                    .font(.title2)
-                    .bold()
+                    .font(.system(size: 20, weight: .bold))
                     //.frame(maxWidth: .infinity, alignment: .center)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.bottom, 4)

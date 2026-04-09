@@ -136,16 +136,17 @@ struct ContentView: View {
                 // Header
                 HStack {
                     Text("Long Island Car Shows and Cruise Nights/Cars & Coffee")
-                        .font(.footnote)
+                        .font(.system(size: 14, weight: .regular))
+                        //.font(.footnote)
                         .multilineTextAlignment(.center)
-                    // scales text labels from wrapping on display zoom. change to 0.6 if text is too small
+                    // scales text labels from wrapping on display zoom.
                         .minimumScaleFactor(0.5)
                         .lineLimit(1)
                 }
                 .padding(.top, 5)
                 .padding(.bottom, 8)
 
-                // Segmented picker for tab selection
+                // Segmented picker for top menu
                 HStack(spacing: 0) {
                     ForEach(Selection.allCases) { option in
                         Button(action: {
@@ -156,12 +157,14 @@ struct ContentView: View {
                             selection = option
                         }) {
                             Text(option.rawValue)
-                                .font(.subheadline)
+                            // explicit font size prevents dynamic type from enlarging the menu text
+                                .font(.system(size: 15, weight: .regular))
+                                //.font(.subheadline)
                                 .foregroundColor(selection == option ? .white : .primary)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 4)
                                 .background(selection == option ? Color.accentColor : Color.clear)
-                            // scales text labels from wrapping on display zoom. change to 0.6 if text is too small
+                            // scales text labels from wrapping on dynamic type zoom. change to 0.6 if text is too small
                                 .minimumScaleFactor(0.5)
                                 .lineLimit(1)
                         }
